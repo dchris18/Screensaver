@@ -216,51 +216,118 @@ function createMachine(x, yOffset, label, type) {
   g.position.set(x, yOffset, 0);
   scene.add(g);
 
-  g.add(box(2.25, 3.2, 1.45, mat.steel, 0, 2.55, -0.2));
-  g.add(box(2.45, 0.45, 1.65, mat.darkSteel, 0, 4.35, -0.2));
-  g.add(box(2.35, 0.45, 1.65, mat.darkSteel, 0, 0.95, -0.2));
-  g.add(box(2.25, 0.18, 1.55, mat.orange, 0, 4.08, -0.18));
-
-  g.add(box(1.32, 1.35, 0.05, mat.black, 0, 2.28, 0.54));
-  g.add(box(1.02, 0.92, 0.04, mat.glass, 0, 2.24, 0.58));
-  g.add(box(1.25, 0.08, 0.05, mat.glow, 0, 3.22, 0.62));
-
-  g.add(box(0.18, 2.3, 1.55, mat.darkSteel, -1.18, 2.5, -0.2));
-  g.add(box(0.18, 2.3, 1.55, mat.darkSteel, 1.18, 2.5, -0.2));
-
-  addWarningStripes(g, 1.22);
   addTextSprite(label, x, yOffset + 4.78, 0.7, 54);
   addGlowLight(x, yOffset + 2.4, 0.8, 2.2, 5);
 
   let moving = null;
+  let moving2 = null;
   let arm = null;
 
+  // shared back core
+  g.add(box(2.25, 3.2, 1.45, mat.steel, 0, 2.55, -0.2));
+  g.add(box(2.45, 0.45, 1.65, mat.darkSteel, 0, 4.35, -0.2));
+  g.add(box(2.35, 0.45, 1.65, mat.darkSteel, 0, 0.95, -0.2));
+
+  // 01 PRESS: big vertical hammer
   if (type === "press") {
-    arm = box(0.32, 1.2, 0.32, mat.darkSteel, 0, 3.3, 0.1);
-    moving = box(1.25, 0.25, 1.1, mat.brightOrange, 0, 2.65, 0.1);
+    g.add(box(2.25, 0.18, 1.55, mat.orange, 0, 4.08, -0.18));
+    g.add(box(1.25, 0.08, 0.05, mat.glow, 0, 3.22, 0.62));
+
+    arm = box(0.32, 1.35, 0.32, mat.darkSteel, 0, 3.3, 0.1);
+    moving = box(1.35, 0.3, 1.15, mat.brightOrange, 0, 2.55, 0.1);
+
     g.add(arm, moving);
   }
 
+  // 02 SCAN: glowing scanning frame
   if (type === "scan") {
-    moving = box(1.45, 0.1, 1.2, mat.glow, 0, 2.75, 0.15);
-    g.add(moving);
+    g.add(box(1.65, 1.25, 0.08, mat.black, 0, 2.35, 0.6));
+    g.add(box(1.45, 0.1, 1.25, mat.glow, 0, 2.85, 0.12));
+
+    moving = box(1.65, 0.08, 1.35, mat.glow, 0, 2.1, 0.12);
+    moving2 = box(0.08, 1.15, 1.35, mat.glow, -0.75, 2.35, 0.12);
+
+    g.add(moving, moving2);
   }
 
-  if (type === "side") {
-    arm = box(0.24, 1.25, 0.24, mat.darkSteel, 0, 3.2, 0.1);
-    moving = box(0.45, 0.45, 1.7, mat.brightOrange, 0, 2.2, 0.1);
+  // 03 SORT: sideways pushing arm
+  if (type === "sort") {
+    g.add(box(1.45, 0.8, 0.08, mat.glass, 0, 2.35, 0.62));
+
+    arm = box(0.3, 1.1, 0.3, mat.darkSteel, -0.55, 2.65, 0.25);
+    arm.rotation.z = -0.35;
+
+    moving = box(0.42, 0.42, 1.8, mat.brightOrange, 0.35, 2.0, 0.1);
+
     g.add(arm, moving);
   }
 
+  // 04 CRUSH: jaws close together
+  if (type === "crush") {
+    g.add(box(1.5, 1.05, 0.08, mat.black, 0, 2.3, 0.62));
+
+    moving = box(1.35, 0.22, 1.1, mat.brightOrange, 0, 2.75, 0.1);
+    moving2 = box(1.35, 0.22, 1.1, mat.brightOrange, 0, 1.95, 0.1);
+
+    g.add(moving, moving2);
+  }
+
+  // 05 LASER: vertical laser beam
   if (type === "laser") {
-    moving = box(0.12, 1.35, 0.12, mat.glow, 0, 2.45, 0.2);
+    g.add(box(1.25, 0.08, 0.05, mat.glow, 0, 3.2, 0.62));
+
+    moving = box(0.12, 1.5, 0.12, mat.glow, 0, 2.35, 0.25);
+    moving2 = box(1.15, 0.12, 1.05, mat.brightOrange, 0, 3.05, 0.1);
+
+    g.add(moving, moving2);
+  }
+
+  // 06 CHECK: rotating inspection scanner
+  if (type === "check") {
+    g.add(box(1.5, 1.1, 0.08, mat.glass, 0, 2.3, 0.62));
+
+    moving = new THREE.Group();
+
+    const ring1 = cyl(0.55, 0.06, mat.glow, 0, 0, 0, Math.PI / 2);
+    const ring2 = cyl(0.38, 0.06, mat.brightOrange, 0, 0, 0, Math.PI / 2);
+
+    moving.add(ring1, ring2);
+    moving.position.set(0, 2.35, 0.25);
+
     g.add(moving);
   }
+
+  // 07 STAMP: square stamping plate
+  if (type === "stamp") {
+    g.add(box(1.35, 0.9, 0.08, mat.black, 0, 2.35, 0.62));
+
+    arm = box(0.22, 1.25, 0.22, mat.darkSteel, 0, 3.25, 0.1);
+    moving = box(0.9, 0.22, 0.9, mat.brightOrange, 0, 2.55, 0.1);
+    moving2 = box(0.95, 0.06, 0.95, mat.glow, 0, 1.9, 0.1);
+
+    g.add(arm, moving, moving2);
+  }
+
+  // 08 OUTPUT: opening door/ejector
+  if (type === "output") {
+    g.add(box(1.55, 1.15, 0.08, mat.glass, 0, 2.25, 0.62));
+
+    moving = box(1.25, 0.18, 1.05, mat.brightOrange, 0, 1.75, 0.1);
+    moving2 = box(0.28, 0.28, 1.5, mat.orange, 0.75, 2.25, 0.1);
+
+    g.add(moving, moving2);
+  }
+
+  // small side details
+  g.add(box(0.18, 2.3, 1.55, mat.darkSteel, -1.18, 2.5, -0.2));
+  g.add(box(0.18, 2.3, 1.55, mat.darkSteel, 1.18, 2.5, -0.2));
+  addWarningStripes(g, 1.22);
 
   return {
     g,
     type,
     moving,
+    moving2,
     arm,
     startY: moving ? moving.position.y : 0,
     startZ: moving ? moving.position.z : 0
@@ -270,13 +337,13 @@ function createMachine(x, yOffset, label, type) {
 const machines = [
   createMachine(-7.1, 1.0, "01 PRESS", "press"),
   createMachine(-2.35, 1.0, "02 SCAN", "scan"),
-  createMachine(2.35, 1.0, "03 SORT", "side"),
-  createMachine(7.1, 1.0, "04 CRUSH", "press"),
+  createMachine(2.35, 1.0, "03 SORT", "sort"),
+  createMachine(7.1, 1.0, "04 CRUSH", "crush"),
 
   createMachine(7.1, -2.8, "05 LASER", "laser"),
-  createMachine(2.35, -2.8, "06 CHECK", "scan"),
-  createMachine(-2.35, -2.8, "07 STAMP", "press"),
-  createMachine(-7.1, -2.8, "08 OUTPUT", "side")
+  createMachine(2.35, -2.8, "06 CHECK", "check"),
+  createMachine(-2.35, -2.8, "07 STAMP", "stamp"),
+  createMachine(-7.1, -2.8, "08 OUTPUT", "output")
 ];
 
 // ROBOT ARMS
@@ -415,30 +482,54 @@ function animate() {
   });
 
   machines.forEach((m, i) => {
-    const d = i * 0.7;
+  const d = i * 0.7;
 
-    if (m.type === "press") {
-      const hit = Math.pow(Math.abs(Math.sin(time * 2.2 + d)), 4);
-      m.moving.position.y = m.startY - hit * 0.95;
-      if (m.arm) m.arm.scale.y = 1 + hit * 0.55;
-    }
+  if (m.type === "press") {
+    const hit = Math.pow(Math.abs(Math.sin(time * 2.2 + d)), 4);
+    m.moving.position.y = m.startY - hit * 0.95;
+    if (m.arm) m.arm.scale.y = 1 + hit * 0.55;
+  }
 
-    if (m.type === "scan") {
-      m.moving.scale.x = 1.05 + Math.sin(time * 5.5 + d) * 0.12;
-      m.moving.scale.z = 1.05 + Math.sin(time * 5.5 + d) * 0.12;
-      m.moving.position.y = m.startY + Math.sin(time * 3.2 + d) * 0.08;
-    }
+  if (m.type === "scan") {
+    m.moving.position.y = 2.05 + Math.sin(time * 4 + d) * 0.55;
+    m.moving2.position.x = -0.75 + Math.sin(time * 3 + d) * 1.5;
+  }
 
-    if (m.type === "side") {
-      m.moving.position.z = m.startZ + Math.sin(time * 2.8 + d) * 0.75;
-      if (m.arm) m.arm.rotation.z = Math.sin(time * 2.8 + d) * 0.06;
-    }
+  if (m.type === "sort") {
+    m.moving.position.z = m.startZ + Math.sin(time * 2.8 + d) * 0.8;
+    if (m.arm) m.arm.rotation.z = -0.35 + Math.sin(time * 2.8 + d) * 0.25;
+  }
 
-    if (m.type === "laser") {
-      m.moving.scale.y = 0.7 + Math.abs(Math.sin(time * 4.5 + d)) * 1.1;
-      m.moving.rotation.y += 0.02;
-    }
-  });
+  if (m.type === "crush") {
+    const squeeze = Math.abs(Math.sin(time * 2.4 + d));
+    m.moving.position.y = 2.9 - squeeze * 0.42;
+    m.moving2.position.y = 1.8 + squeeze * 0.42;
+  }
+
+  if (m.type === "laser") {
+    m.moving.scale.y = 0.45 + Math.abs(Math.sin(time * 5 + d)) * 1.25;
+    m.moving.rotation.y += 0.05;
+    m.moving2.rotation.y += 0.015;
+  }
+
+  if (m.type === "check") {
+    m.moving.rotation.x += 0.03;
+    m.moving.rotation.y += 0.04;
+    m.moving.scale.setScalar(1 + Math.sin(time * 3 + d) * 0.08);
+  }
+
+  if (m.type === "stamp") {
+    const stamp = Math.pow(Math.abs(Math.sin(time * 2.7 + d)), 5);
+    m.moving.position.y = m.startY - stamp * 0.75;
+    if (m.arm) m.arm.scale.y = 1 + stamp * 0.45;
+    m.moving2.material.opacity = 0.5 + stamp * 0.5;
+  }
+
+  if (m.type === "output") {
+    m.moving.rotation.x = Math.sin(time * 2 + d) * 0.25;
+    m.moving2.position.z = Math.sin(time * 2.4 + d) * 0.8;
+  }
+});
 
   robot1.rotation.y = Math.sin(time * 1.1) * 0.25;
   robot2.rotation.y = -Math.sin(time * 1.25) * 0.25;
