@@ -875,13 +875,6 @@ topLeftDetail.add(box(3.4, 0.08, 0.08, mat.yellow, 0, 1.55, 0.68));
 topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, -1.55, 1.05, 0.68));
 topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, 1.55, 1.05, 0.68));
 
-// small lamp
-topLeftDetail.add(box(0.28, 0.35, 0.18, mat.gray, -1.3, 2.7, 0.62));
-topLeftDetail.add(box(0.12, 0.26, 0.08, mat.glow, -1.3, 2.7, 0.72));
-
-const topLeftLight = new THREE.PointLight("#e0a64a", 0.55, 4);
-topLeftLight.position.set(-14.7, 2.7, -3.0);
-scene.add(topLeftLight);
 /* ---------- PROPS ---------- */
 
 for (let i = 0; i < 8; i++) {
