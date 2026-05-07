@@ -3,8 +3,8 @@ import * as THREE from "three";
 /* ---------- BASIC SETUP ---------- */
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#efe9dc");
-scene.fog = new THREE.Fog("#efe9dc", 28, 62);
+scene.background = new THREE.Color("#e3d6c3");
+scene.fog = new THREE.Fog("#e3d6c3", 30, 66);
 
 const camera = new THREE.PerspectiveCamera(
   31,
@@ -26,39 +26,39 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.52;
+renderer.toneMappingExposure = 1.08;
 
 document.body.appendChild(renderer.domElement);
 
 /* ---------- COLORS / MATERIALS ---------- */
 
 const C = {
-  floor: "#eadfce",
-tileA: "#f5efe3",
-tileB: "#d8ccba",
+  floor: "#cdbda7",
+  tileA: "#dfd1bd",
+  tileB: "#bba98f",
 
-  wall: "#eadbc8",
-  wall2: "#f4eadc",
+  wall: "#d8c4aa",
+  wall2: "#ead8bf",
 
-  white: "#fff8ec",
-  white2: "#e9ddcf",
+  white: "#e8dcc8",
+  white2: "#cdbfa9",
 
-  gray: "#9a968d",
-  darkGray: "#3d403d",
+  gray: "#887f70",
+  darkGray: "#3a3a35",
 
-  dark: "#111312",
-  belt: "#151716",
+  dark: "#181714",
+  belt: "#1d1b18",
 
-  yellow: "#e7b42c",
-  yellow2: "#ffd15a",
-  orange: "#eca84d",
-  orange2: "#f4bd6c",
+  yellow: "#c9962d",
+  yellow2: "#e0b24a",
+  orange: "#d7913f",
+  orange2: "#e5a85d",
 
-  green: "#718b3f",
-  green2: "#8aa653",
+  green: "#5f743d",
+  green2: "#7f9652",
 
-  blueLine: "#7894bd",
-  red: "#d85b48"
+  blueLine: "#6c7f95",
+  red: "#b95342"
 };
 
 const mat = {
@@ -240,10 +240,10 @@ function capsule(radius, length, material, x = 0, y = 0, z = 0) {
 /* ---------- LIGHTING ---------- */
 
 scene.add(
-  new THREE.HemisphereLight("#ffffff", "#c7b9a5", 2.25)
+  new THREE.HemisphereLight("#fff4df", "#8d7c68", 1.35)
 );
 
-const sun = new THREE.DirectionalLight("#fff0d2", 3.2);
+const sun = new THREE.DirectionalLight("#ffe2b5", 1.85);
 
 sun.position.set(6, 10, 8);
 sun.castShadow = true;
@@ -260,14 +260,14 @@ scene.add(sun);
 
 const glowLights = [];
 
-function addLamp(x, y, z, power = 1.2) {
-  const light = new THREE.PointLight("#ffd98f", power, 6);
+function addLamp(x, y, z, power = 0.65) {
+  const light = new THREE.PointLight("#f3bf6a", power, 4.5);
   light.position.set(x, y, z);
   scene.add(light);
   glowLights.push(light);
 
   scene.add(box(0.28, 0.38, 0.18, mat.gray, x, y, z));
-  scene.add(box(0.14, 0.32, 0.12, mat.glow, x, y + 0.05, z + 0.06));
+  scene.add(box(0.13, 0.28, 0.1, mat.glow, x, y + 0.04, z + 0.06));
 
   return light;
 }
@@ -571,30 +571,29 @@ function createPlant(x, z, scale = 1) {
   plant.scale.set(scale, scale, scale);
   scene.add(plant);
 
-  plant.add(box(0.52, 0.5, 0.52, mat.gray, 0, 0.25, 0));
+  plant.add(box(0.5, 0.45, 0.5, mat.gray, 0, 0.23, 0));
+  plant.add(cyl(0.22, 0.07, mat.dark, 0, 0.49, 0));
 
-  const soil = cyl(0.22, 0.08, mat.dark, 0, 0.54, 0);
-  plant.add(soil);
-
-  for (let i = 0; i < 22; i++) {
+  for (let i = 0; i < 24; i++) {
     const leaf = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.055, 0.72 + Math.random() * 0.18, 10, 18),
+      new THREE.CapsuleGeometry(0.055, 0.55 + Math.random() * 0.24, 10, 18),
       i % 2 === 0 ? mat.green : mat.green2
     );
 
-    const angle = i * 0.55;
-    const radius = 0.08 + Math.random() * 0.18;
+    const angle = i * 0.52;
+    const radius = 0.06 + Math.random() * 0.18;
 
     leaf.position.set(
       Math.cos(angle) * radius,
-      0.78 + Math.random() * 0.18,
+      0.74 + Math.random() * 0.22,
       Math.sin(angle) * radius
     );
 
-    leaf.rotation.z = -0.9 + Math.random() * 1.8;
     leaf.rotation.y = angle;
-    leaf.rotation.x = 0.3 + Math.random() * 0.45;
+    leaf.rotation.x = 0.35 + Math.random() * 0.45;
+    leaf.rotation.z = -0.85 + Math.random() * 1.7;
 
+    leaf.castShadow = true;
     plant.add(leaf);
   }
 
@@ -1050,8 +1049,6 @@ crate.position.set(
 );
 
 crate.rotation.y = -0.35;
-
-  crate.rotation.y = -0.86;
 
   crate.userData.draggable = true;
   crate.userData.onConveyor = false;
