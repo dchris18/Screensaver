@@ -308,7 +308,7 @@ scene.add(box(0.42, 7.6, 0.42, mat.gray, -16.45, 3.45, -7.35));
 
 // LEFT WALL VISIBLE DETAIL PANEL - this sits ON the blank wall area
 const leftWallDetail = new THREE.Group();
-leftWallDetail.position.set(-16.72, 0, -1.1);
+leftWallDetail.position.set(-16.72, 0, 0.1);
 scene.add(leftWallDetail);
 
 // large wall-mounted utility panel
