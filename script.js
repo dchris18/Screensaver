@@ -1,12 +1,18 @@
 import * as THREE from "three";
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#151310");
-scene.fog = new THREE.Fog("#151310", 18, 38);
+scene.background = new THREE.Color("#d8d8d5");
+scene.fog = new THREE.Fog("#d8d8d5", 18, 42);
 
-const camera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 1.35, 19.5);
-camera.lookAt(0, 0.9, 0);
+const camera = new THREE.PerspectiveCamera(
+  30,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+
+camera.position.set(6.8, 4.2, 16);
+camera.lookAt(0, 1.1, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -15,318 +21,277 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.45;
+renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
 const C = {
-  wall: "#29241f",
-  floor: "#201b17",
-  dark: "#080706",
-  steel: "#4c4942",
-  steel2: "#746f63",
-  brass: "#b47a3c",
-  copper: "#b85c28",
-  orange: "#f28a3a",
-  glow: "#ff9a45",
-  cream: "#d6c39c"
+  floor: "#cfcfca",
+  white: "#f2f0e9",
+  white2: "#dedbd2",
+  gray: "#777a78",
+  dark: "#202322",
+  belt: "#222524",
+  yellow: "#d9a514",
+  yellow2: "#f1c232",
+  glass: "#15191a"
 };
 
 const mat = {
-  wall: new THREE.MeshStandardMaterial({ color: C.wall, roughness: 0.86, metalness: 0.08 }),
-  floor: new THREE.MeshStandardMaterial({ color: C.floor, roughness: 0.8, metalness: 0.16 }),
-  dark: new THREE.MeshStandardMaterial({ color: C.dark, roughness: 0.52, metalness: 0.48 }),
-  steel: new THREE.MeshStandardMaterial({ color: C.steel, roughness: 0.42, metalness: 0.48 }),
-  steel2: new THREE.MeshStandardMaterial({ color: C.steel2, roughness: 0.38, metalness: 0.42 }),
-  brass: new THREE.MeshStandardMaterial({ color: C.brass, roughness: 0.32, metalness: 0.52 }),
-  copper: new THREE.MeshStandardMaterial({ color: C.copper, roughness: 0.34, metalness: 0.42 }),
-  orange: new THREE.MeshStandardMaterial({ color: C.orange, roughness: 0.3, metalness: 0.25 }),
-  cream: new THREE.MeshStandardMaterial({
-    color: C.cream,
-    emissive: "#8d6a31",
-    emissiveIntensity: 0.18,
-    roughness: 0.3,
-    metalness: 0.08
-  }),
-  glow: new THREE.MeshBasicMaterial({ color: C.glow }),
+  floor: new THREE.MeshStandardMaterial({ color: C.floor, roughness: 0.65 }),
+  white: new THREE.MeshStandardMaterial({ color: C.white, roughness: 0.38, metalness: 0.08 }),
+  white2: new THREE.MeshStandardMaterial({ color: C.white2, roughness: 0.45, metalness: 0.08 }),
+  gray: new THREE.MeshStandardMaterial({ color: C.gray, roughness: 0.42, metalness: 0.22 }),
+  dark: new THREE.MeshStandardMaterial({ color: C.dark, roughness: 0.55, metalness: 0.35 }),
+  belt: new THREE.MeshStandardMaterial({ color: C.belt, roughness: 0.48, metalness: 0.25 }),
+  yellow: new THREE.MeshStandardMaterial({ color: C.yellow, roughness: 0.35, metalness: 0.18 }),
+  yellow2: new THREE.MeshStandardMaterial({ color: C.yellow2, roughness: 0.32, metalness: 0.16 }),
   glass: new THREE.MeshStandardMaterial({
-    color: C.orange,
-    emissive: C.glow,
-    emissiveIntensity: 1.25,
-    roughness: 0.1,
-    metalness: 0.05,
+    color: C.glass,
+    roughness: 0.18,
+    metalness: 0.15,
     transparent: true,
-    opacity: 0.62
-  }),
-  bg: new THREE.MeshStandardMaterial({
-    color: "#15110e",
-    roughness: 0.9,
-    metalness: 0.12
+    opacity: 0.75
   })
 };
 
 function box(w, h, d, material, x = 0, y = 0, z = 0) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
-  m.position.set(x, y, z);
-  m.castShadow = true;
-  m.receiveShadow = true;
-  return m;
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
 }
 
 function cyl(r, h, material, x = 0, y = 0, z = 0, rotX = 0, rotZ = 0) {
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 32), material);
-  m.position.set(x, y, z);
-  m.rotation.x = rotX;
-  m.rotation.z = rotZ;
-  m.castShadow = true;
-  m.receiveShadow = true;
-  return m;
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 32), material);
+  mesh.position.set(x, y, z);
+  mesh.rotation.x = rotX;
+  mesh.rotation.z = rotZ;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
 }
 
-function label(text, x, y, z) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 160;
+// lighting
+scene.add(new THREE.HemisphereLight("#ffffff", "#b6b6b2", 1.8));
 
-  const ctx = canvas.getContext("2d");
-  ctx.font = "bold 52px Arial";
-  ctx.fillStyle = "#f0a45b";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(text, 256, 80);
+const sun = new THREE.DirectionalLight("#ffffff", 2.6);
+sun.position.set(6, 9, 8);
+sun.castShadow = true;
+sun.shadow.mapSize.width = 2048;
+sun.shadow.mapSize.height = 2048;
+sun.shadow.camera.left = -14;
+sun.shadow.camera.right = 14;
+sun.shadow.camera.top = 10;
+sun.shadow.camera.bottom = -8;
+scene.add(sun);
 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
+// floor
+scene.add(box(28, 0.25, 11, mat.floor, 0, -0.15, 0));
 
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
-  sprite.position.set(x, y, z);
-  sprite.scale.set(1.75, 0.55, 1);
-  scene.add(sprite);
-}
-
-// lights
-scene.add(new THREE.AmbientLight("#ffffff", 0.36));
-
-const key = new THREE.DirectionalLight("#ffe0bd", 3.4);
-key.position.set(0, 7, 9);
-key.castShadow = true;
-key.shadow.mapSize.width = 2048;
-key.shadow.mapSize.height = 2048;
-key.shadow.camera.left = -14;
-key.shadow.camera.right = 14;
-key.shadow.camera.top = 8;
-key.shadow.camera.bottom = -8;
-scene.add(key);
-
-const glowLights = [];
-
-function addGlow(x, y, z, power = 2.5, dist = 6) {
-  const l = new THREE.PointLight(C.glow, power, dist);
-  l.position.set(x, y, z);
-  scene.add(l);
-  glowLights.push(l);
-}
-
-// room
-scene.add(box(26, 0.32, 7, mat.floor, 0, -1.95, 0));
-scene.add(box(26, 7.8, 0.3, mat.wall, 0, 1.9, -3.6));
-scene.add(box(26, 0.28, 7, mat.dark, 0, 5.85, 0));
-
-for (let i = 0; i < 14; i++) {
-  scene.add(box(0.045, 7.5, 0.08, mat.dark, -12.4 + i * 1.9, 1.9, -3.4));
+// subtle floor grid
+for (let i = 0; i < 15; i++) {
+  scene.add(box(0.025, 0.01, 11, mat.white2, -13 + i * 2, 0.01, 0));
 }
 
 for (let i = 0; i < 8; i++) {
-  scene.add(cyl(0.035, 25, mat.dark, 0, 5.1 - i * 0.32, -3.25, 0, Math.PI / 2));
+  scene.add(box(28, 0.01, 0.025, mat.white2, 0, 0.015, -5 + i * 1.5));
 }
 
-for (let i = 0; i < 6; i++) {
-  const x = -9.5 + i * 3.8;
-  scene.add(box(1.35, 0.08, 0.08, mat.glow, x, 5.35, -2.55));
-  addGlow(x, 4.9, -2.25, 1.4, 5);
-}
-
-// background factory depth
-const bg = new THREE.Group();
-bg.position.set(0, -0.1, -2.35);
-scene.add(bg);
-
-for (let i = 0; i < 10; i++) {
-  const x = -11.8 + i * 2.6;
-
-  bg.add(box(1.35, 1.75, 0.45, mat.bg, x, 1.35 + (i % 2) * 0.5, -0.6));
-  bg.add(box(0.85, 0.06, 0.06, mat.glow, x, 2.25 + (i % 2) * 0.5, -0.25));
-
-  const pipe = cyl(0.028, 2.2, mat.dark, x + 0.7, 2.2, -0.45);
-  bg.add(pipe);
-}
-
-for (let y of [3.05, 1.0, -0.55]) {
-  bg.add(box(25, 0.12, 0.35, mat.dark, 0, y, -0.72));
-}
-
-for (let i = 0; i < 18; i++) {
-  bg.add(box(0.07, 0.05, 0.32, mat.copper, -12 + i * 1.4, 1.1, -0.45));
-}
-
-// conveyor
-const beltY = -0.92;
+// conveyor helper
 const rollers = [];
 
-scene.add(box(24.5, 0.38, 1.18, mat.dark, 0, beltY, 0));
-scene.add(box(24.2, 0.08, 1.05, mat.steel, 0, beltY + 0.28, 0));
+function createConveyor(x, y, z, length, direction = 1) {
+  const g = new THREE.Group();
+  g.position.set(x, y, z);
+  scene.add(g);
 
-for (let i = 0; i < 32; i++) {
-  const r = cyl(0.115, 1.25, mat.steel2, -11.8 + i * 0.76, beltY + 0.33, 0, Math.PI / 2);
-  rollers.push(r);
-  scene.add(r);
+  g.add(box(length, 0.28, 1.15, mat.gray, 0, 0, 0));
+  g.add(box(length - 0.2, 0.08, 0.95, mat.belt, 0, 0.22, 0));
+
+  for (let i = 0; i < Math.floor(length / 0.7); i++) {
+    const r = cyl(
+      0.09,
+      1.05,
+      mat.dark,
+      -length / 2 + 0.35 + i * 0.7,
+      0.27,
+      0,
+      Math.PI / 2
+    );
+
+    r.userData.direction = direction;
+    rollers.push(r);
+    g.add(r);
+  }
+
+  for (let i = 0; i < 4; i++) {
+    const px = -length / 2 + 0.6 + i * ((length - 1.2) / 3);
+    g.add(box(0.12, 0.8, 0.12, mat.gray, px, -0.45, -0.45));
+    g.add(box(0.12, 0.8, 0.12, mat.gray, px, -0.45, 0.45));
+  }
+
+  return g;
 }
+
+createConveyor(-5.5, 0.55, 0, 7.4, 1);
+createConveyor(1.9, 0.55, 0, 7.2, 1);
+createConveyor(7.1, 0.95, -1.15, 4.4, 1);
+
+// transfer ramp
+const ramp = box(3.0, 0.12, 1.0, mat.belt, 4.7, 0.86, -0.55);
+ramp.rotation.z = -0.18;
+scene.add(ramp);
 
 // packages
 const packages = [];
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 8; i++) {
   const p = new THREE.Group();
-  p.add(box(0.55, 0.42, 0.55, mat.copper));
-  p.add(box(0.4, 0.05, 0.4, mat.orange, 0, 0.24, 0));
-  p.add(box(0.04, 0.3, 0.57, mat.dark, 0.18, 0.02, 0));
 
-  p.position.set(-11.5 + i * 2.35, beltY + 0.73, 0);
-  p.userData.speed = 0.026 + Math.random() * 0.004;
+  p.add(box(0.45, 0.32, 0.45, mat.yellow));
+  p.add(box(0.3, 0.04, 0.3, mat.yellow2, 0, 0.18, 0));
+
+  p.position.set(-8.8 + i * 2.1, 1.02, 0);
+  p.userData.speed = 0.022 + Math.random() * 0.004;
 
   packages.push(p);
   scene.add(p);
 }
 
-// machine details
-function bolts(g, y = -0.45) {
-  for (let i = 0; i < 6; i++) {
-    g.add(cyl(0.045, 0.04, mat.orange, -0.75 + i * 0.3, y, 0.72, Math.PI / 2));
+// machine detail helpers
+function addYellowRails(g, w, y, z) {
+  g.add(box(w, 0.07, 0.08, mat.yellow, 0, y, z));
+  g.add(box(0.07, 0.5, 0.08, mat.yellow, -w / 2, y - 0.2, z));
+  g.add(box(0.07, 0.5, 0.08, mat.yellow, w / 2, y - 0.2, z));
+}
+
+function addVents(g, x, y, z) {
+  for (let i = 0; i < 4; i++) {
+    g.add(box(0.08, 0.42, 0.05, mat.dark, x + i * 0.22, y, z));
   }
 }
 
-function vents(g, x = 0, y = 2.7) {
+function addSafetyRail(g, width, x = 0, y = 1.2, z = 0.75) {
+  g.add(box(width, 0.05, 0.05, mat.gray, x, y, z));
+  g.add(box(width, 0.05, 0.05, mat.gray, x, y + 0.35, z));
+
   for (let i = 0; i < 5; i++) {
-    g.add(box(0.95, 0.035, 0.05, mat.dark, x, y - i * 0.14, 0.67));
+    g.add(box(0.045, 0.42, 0.045, mat.gray, x - width / 2 + i * (width / 4), y + 0.18, z));
   }
 }
 
-function pipes(g) {
-  g.add(cyl(0.045, 2.2, mat.brass, -1.15, 2.6, -0.35));
-  g.add(cyl(0.045, 2.2, mat.brass, 1.15, 2.6, -0.35));
-  g.add(cyl(0.04, 1.4, mat.copper, 0, 3.8, -0.32, 0, Math.PI / 2));
+// background machinery for depth
+const bg = new THREE.Group();
+bg.position.set(0, 0, -3.2);
+scene.add(bg);
+
+for (let i = 0; i < 5; i++) {
+  const x = -10 + i * 5;
+
+  bg.add(box(2.1, 1.7, 1.1, mat.white2, x, 1.05, 0));
+  bg.add(box(1.4, 0.14, 1.15, mat.yellow, x, 2.0, 0));
+  bg.add(box(0.35, 0.55, 0.35, mat.gray, x + 0.65, 2.35, 0));
+  bg.add(box(0.7, 0.7, 0.05, mat.glass, x - 0.3, 1.15, 0.58));
+
+  createConveyor(x, 0.45, -3.2, 3.4, -1);
 }
 
-function machineShell(g, variant) {
-  const width = variant === "wide" ? 2.9 : variant === "thin" ? 2.25 : 2.65;
-  const height = variant === "tall" ? 4.45 : 4.1;
-
-  g.add(box(width, height, 1.45, mat.steel, 0, 1.25, -0.18));
-  g.add(box(width + 0.25, 0.48, 1.65, mat.dark, 0, 3.55, -0.18));
-  g.add(box(width + 0.1, 0.45, 1.6, mat.dark, 0, -0.75, -0.18));
-
-  g.add(box(0.16, 3.5, 1.55, mat.dark, -width / 2, 1.25, -0.12));
-  g.add(box(0.16, 3.5, 1.55, mat.dark, width / 2, 1.25, -0.12));
-
-  g.add(box(1.45, 1.18, 0.08, mat.cream, 0, 1.35, 0.62));
-  g.add(box(1.25, 0.08, 0.06, mat.glow, 0, 2.35, 0.66));
-
-  pipes(g);
-  vents(g);
-  bolts(g);
-}
-
-function createMachine(x, name, type) {
+// machines
+function createInputTunnel() {
   const g = new THREE.Group();
-  g.position.set(x, 0, 0);
+  g.position.set(-8.2, 0, 0);
   scene.add(g);
 
-  const parts = {};
+  g.add(box(3.3, 2.1, 1.45, mat.white, 0, 1.35, 0));
+  g.add(box(3.45, 0.18, 1.55, mat.white2, 0, 2.5, 0));
+  g.add(box(2.5, 1.1, 0.08, mat.glass, 0, 1.3, 0.77));
 
-  if (type === "forge") {
-    machineShell(g, "tall");
-    parts.pressRod = box(0.28, 1.05, 0.28, mat.dark, 0, 2.85, 0.12);
-    parts.pressHead = box(1.28, 0.28, 1.0, mat.orange, 0, 2.18, 0.12);
-    parts.steam = cyl(0.18, 0.8, mat.glass, -0.78, 1.3, 0.25, Math.PI / 2);
-    parts.gear = cyl(0.34, 0.1, mat.brass, 0.92, 2.8, 0.5, Math.PI / 2);
-    g.add(parts.pressRod, parts.pressHead, parts.steam, parts.gear);
-  }
+  addYellowRails(g, 2.4, 2.55, 0.82);
+  addVents(g, -1.1, 1.35, 0.82);
 
-  if (type === "scanner") {
-    machineShell(g, "wide");
-    parts.scanBar = box(1.65, 0.08, 1.15, mat.glow, 0, 0.92, 0.12);
-    parts.scanWall = box(0.08, 1.25, 1.15, mat.glow, -0.78, 1.38, 0.12);
-    parts.ring = cyl(0.42, 0.07, mat.brass, 0.85, 2.85, 0.52, Math.PI / 2);
-    parts.lens = cyl(0.22, 0.08, mat.glass, -0.9, 2.75, 0.55, Math.PI / 2);
-    g.add(parts.scanBar, parts.scanWall, parts.ring, parts.lens);
-  }
-
-  if (type === "assembler") {
-    machineShell(g, "thin");
-    parts.armBase = cyl(0.3, 0.32, mat.dark, -0.55, 0.65, 0.35);
-    parts.armA = box(0.24, 1.05, 0.24, mat.copper, -0.25, 1.12, 0.35);
-    parts.armA.rotation.z = -0.45;
-    parts.armB = box(0.2, 0.88, 0.2, mat.steel2, 0.25, 1.65, 0.35);
-    parts.armB.rotation.z = 0.45;
-    parts.claw = box(0.58, 0.1, 0.16, mat.orange, 0.55, 1.98, 0.35);
-    parts.piston = cyl(0.05, 1.1, mat.brass, 0.75, 1.65, 0.42, 0, 0.35);
-    g.add(parts.armBase, parts.armA, parts.armB, parts.claw, parts.piston);
-  }
-
-  if (type === "output") {
-    machineShell(g, "wide");
-    parts.door = box(1.28, 0.18, 1.0, mat.orange, 0, 0.82, 0.12);
-    parts.ejector = box(0.32, 0.32, 1.35, mat.copper, 0.72, 1.34, 0.1);
-    parts.gauge = cyl(0.28, 0.08, mat.brass, -0.85, 2.85, 0.52, Math.PI / 2);
-    parts.needle = box(0.04, 0.32, 0.04, mat.orange, -0.85, 2.85, 0.6);
-    g.add(parts.door, parts.ejector, parts.gauge, parts.needle);
-  }
-
-  label(name, x, 4.08, 0.75);
-  addGlow(x, 1.45, 0.8, 2.8, 6);
-
-  return { g, type, parts };
+  return g;
 }
 
-const machines = [
-  createMachine(-8.7, "01 FORGE", "forge"),
-  createMachine(-2.9, "02 SCAN", "scanner"),
-  createMachine(2.9, "03 ASSEMBLE", "assembler"),
-  createMachine(8.7, "04 OUTPUT", "output")
-];
+function createRollerPress() {
+  const g = new THREE.Group();
+  g.position.set(-3.8, 0, 0);
+  scene.add(g);
 
-// sparks
-const sparkGeo = new THREE.BufferGeometry();
-const sparkCount = 150;
-const sparkPositions = new Float32Array(sparkCount * 3);
-const sparkVel = [];
+  g.add(box(2.4, 2.25, 1.4, mat.white, 0, 1.25, 0));
+  g.add(box(2.55, 0.18, 1.5, mat.yellow, 0, 2.48, 0));
+  g.add(box(1.55, 0.12, 1.1, mat.gray, 0, 1.7, 0.1));
+  g.add(box(1.55, 0.12, 1.1, mat.gray, 0, 1.15, 0.1));
 
-for (let i = 0; i < sparkCount; i++) {
-  sparkPositions[i * 3] = -8.7;
-  sparkPositions[i * 3 + 1] = 1.2;
-  sparkPositions[i * 3 + 2] = 0.85;
+  const rollerA = cyl(0.18, 1.2, mat.dark, 0, 1.68, 0.17, Math.PI / 2);
+  const rollerB = cyl(0.18, 1.2, mat.dark, 0, 1.15, 0.17, Math.PI / 2);
 
-  sparkVel.push({
-    x: (Math.random() - 0.5) * 0.045,
-    y: Math.random() * 0.055,
-    z: (Math.random() - 0.5) * 0.035,
-    life: Math.random()
-  });
+  g.add(rollerA, rollerB);
+
+  addSafetyRail(g, 2.2, 0, 2.7, 0.7);
+
+  return { g, rollerA, rollerB };
 }
 
-sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
+function createScanner() {
+  const g = new THREE.Group();
+  g.position.set(1.2, 0, 0);
+  scene.add(g);
 
-const sparks = new THREE.Points(
-  sparkGeo,
-  new THREE.PointsMaterial({
-    color: C.glow,
-    size: 0.035,
-    transparent: true,
-    opacity: 0.85
-  })
-);
+  g.add(box(2.4, 2.5, 1.35, mat.white, 0, 1.35, 0));
+  g.add(box(2.55, 0.18, 1.45, mat.yellow, 0, 2.72, 0));
+  g.add(box(1.45, 1.1, 0.08, mat.glass, 0, 1.45, 0.72));
 
-scene.add(sparks);
+  const scanBar = box(1.35, 0.08, 1.05, mat.yellow2, 0, 1.05, 0.1);
+  const scanSide = box(0.08, 1.05, 1.05, mat.yellow2, -0.65, 1.45, 0.1);
 
+  g.add(scanBar, scanSide);
+  addVents(g, 0.6, 2.0, 0.76);
+
+  return { g, scanBar, scanSide };
+}
+
+function createOutputMachine() {
+  const g = new THREE.Group();
+  g.position.set(6.6, 0, -0.8);
+  scene.add(g);
+
+  g.add(box(3.5, 2.4, 1.55, mat.white, 0, 1.45, 0));
+  g.add(box(3.65, 0.2, 1.65, mat.white2, 0, 2.75, 0));
+
+  g.add(box(1.6, 1.05, 0.08, mat.glass, -0.3, 1.45, 0.82));
+
+  const flap = box(1.45, 0.13, 1.05, mat.belt, -0.35, 0.92, 0.25);
+  flap.rotation.z = -0.1;
+  g.add(flap);
+
+  const arm = box(0.16, 1.1, 0.16, mat.gray, 1.05, 2.1, 0.55);
+  arm.rotation.z = -0.25;
+
+  const head = box(0.55, 0.28, 0.55, mat.yellow, 0.9, 1.55, 0.55);
+
+  g.add(arm, head);
+
+  addSafetyRail(g, 3.2, 0, 2.95, 0.88);
+
+  return { g, flap, arm, head };
+}
+
+const inputTunnel = createInputTunnel();
+const press = createRollerPress();
+const scanner = createScanner();
+const output = createOutputMachine();
+
+// pipes / industrial overhead
+for (let i = 0; i < 3; i++) {
+  scene.add(cyl(0.05, 17, mat.gray, -1 + i * 1.1, 3.25, -1.8, 0, Math.PI / 2));
+}
+
+for (let i = 0; i < 4; i++) {
+  scene.add(box(0.08, 1.0, 0.08, mat.gray, -6 + i * 3.5, 2.75, -1.8));
+}
+
+// animation
 let time = 0;
 
 function animate() {
@@ -334,98 +299,44 @@ function animate() {
   time += 0.016;
 
   rollers.forEach((r) => {
-    r.rotation.z -= 0.095;
+    r.rotation.z -= 0.08 * (r.userData.direction || 1);
   });
 
   packages.forEach((p) => {
     p.position.x += p.userData.speed;
-    if (p.position.x > 11.7) p.position.x = -11.7;
-    p.rotation.y += 0.005;
+
+    if (p.position.x > 9.2) {
+      p.position.x = -9.2;
+      p.position.z = 0;
+    }
+
+    if (p.position.x > 4.1) {
+      p.position.z = -0.45;
+      p.position.y = 1.1;
+    } else {
+      p.position.z = 0;
+      p.position.y = 1.02;
+    }
+
+    p.rotation.y += 0.004;
   });
 
-  machines.forEach((m, i) => {
-    const d = i * 0.7;
+  press.rollerA.rotation.z += 0.12;
+  press.rollerB.rotation.z -= 0.12;
 
-    if (m.type === "forge") {
-      const hit = Math.pow(Math.abs(Math.sin(time * 2 + d)), 4);
-      m.parts.pressHead.position.y = 2.18 - hit * 0.62;
-      m.parts.pressRod.scale.y = 1 + hit * 0.28;
-      m.parts.gear.rotation.z += 0.04;
-      m.parts.steam.scale.x = 1 + Math.sin(time * 4) * 0.08;
-    }
+  scanner.scanBar.position.y = 1.05 + Math.sin(time * 2.4) * 0.35;
+  scanner.scanSide.position.x = -0.65 + Math.sin(time * 1.9) * 1.15;
 
-    if (m.type === "scanner") {
-      m.parts.scanBar.position.y = 0.92 + Math.sin(time * 3 + d) * 0.45;
-      m.parts.scanWall.position.x = -0.78 + Math.sin(time * 2.5 + d) * 1.35;
-      m.parts.ring.rotation.z += 0.045;
-      m.parts.lens.rotation.z -= 0.03;
-    }
+  output.flap.rotation.z = -0.1 + Math.sin(time * 1.4) * 0.08;
+  output.arm.rotation.z = -0.25 + Math.sin(time * 1.7) * 0.12;
+  output.head.position.y = 1.55 + Math.sin(time * 1.7) * 0.08;
 
-    if (m.type === "assembler") {
-      const s = Math.sin(time * 1.55 + d);
-      m.parts.armA.rotation.z = -0.45 + s * 0.22;
-      m.parts.armB.rotation.z = 0.45 - s * 0.28;
-      m.parts.claw.position.x = 0.55 + s * 0.22;
-      m.parts.claw.position.y = 1.98 + Math.sin(time * 2.2 + d) * 0.08;
-      m.parts.piston.scale.y = 1 + s * 0.08;
-    }
+  bg.rotation.y = Math.sin(time * 0.12) * 0.015;
 
-    if (m.type === "output") {
-      m.parts.door.rotation.x = Math.sin(time * 1.6 + d) * 0.16;
-      m.parts.ejector.position.z = Math.sin(time * 2 + d) * 0.42;
-      m.parts.needle.rotation.z = Math.sin(time * 2.3 + d) * 0.7;
-    }
-  });
-
-  bg.children.forEach((child, i) => {
-    if (child.geometry && i % 5 === 0) {
-      child.position.x += 0.004;
-      if (child.position.x > 12.5) child.position.x = -12.5;
-    }
-  });
-
-  glowLights.forEach((l, i) => {
-    l.intensity = 2 + Math.sin(time * 2 + i) * 0.35;
-  });
-
-  const pos = sparks.geometry.attributes.position.array;
-
-  for (let i = 0; i < sparkCount; i++) {
-    const v = sparkVel[i];
-
-    pos[i * 3] += v.x;
-    pos[i * 3 + 1] += v.y;
-    pos[i * 3 + 2] += v.z;
-
-    v.y -= 0.002;
-    v.life -= 0.018;
-
-    if (v.life <= 0) {
-      const sources = [
-        [-8.7, 1.2],
-        [2.9, 1.35],
-        [8.7, 1.2]
-      ];
-
-      const s = sources[Math.floor(Math.random() * sources.length)];
-
-      pos[i * 3] = s[0] + (Math.random() - 0.5) * 0.65;
-      pos[i * 3 + 1] = s[1] + Math.random() * 0.35;
-      pos[i * 3 + 2] = 0.82;
-
-      v.x = (Math.random() - 0.5) * 0.05;
-      v.y = Math.random() * 0.06;
-      v.z = (Math.random() - 0.5) * 0.035;
-      v.life = 0.5 + Math.random() * 0.8;
-    }
-  }
-
-  sparks.geometry.attributes.position.needsUpdate = true;
-
-  camera.position.x = Math.sin(time * 0.12) * 0.05;
-  camera.position.y = 1.35 + Math.sin(time * 0.1) * 0.02;
-  camera.position.z = 19.5;
-  camera.lookAt(0, 0.9, 0);
+  camera.position.x = 6.8 + Math.sin(time * 0.08) * 0.25;
+  camera.position.y = 4.2 + Math.sin(time * 0.1) * 0.08;
+  camera.position.z = 16;
+  camera.lookAt(0, 1.1, 0);
 
   renderer.render(scene, camera);
 }
