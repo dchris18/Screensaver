@@ -13,8 +13,8 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.set(5.8, 5.4, 16.8);
-camera.lookAt(-2.8, 1.2, 0);
+camera.position.set(4.6, 5.6, 17.4);
+camera.lookAt(-2.4, 1.15, 0.15);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -641,13 +641,29 @@ conveyor(-7.5, 0.45, -3.5, 4.2, 0.25);
 
 // visible 90-degree transfer belt into the right-side machine
 const transferBelt = new THREE.Group();
-transferBelt.position.set(6.55, 0.55, -0.75);
+transferBelt.position.set(6.95, 0.55, -0.82);
 scene.add(transferBelt);
 
-transferBelt.add(box(1.25, 0.28, 2.25, mat.white2, 0, 0, 0));
-transferBelt.add(box(0.92, 0.08, 2.05, mat.belt, 0, 0.25, 0));
-transferBelt.add(box(0.08, 0.08, 2.1, mat.yellow, -0.52, 0.36, 0));
-transferBelt.add(box(0.08, 0.08, 2.1, mat.yellow, 0.52, 0.36, 0));
+transferBelt.add(box(1.35, 0.28, 2.55, mat.white2, 0, 0, 0));
+transferBelt.add(box(1.02, 0.08, 2.35, mat.belt, 0, 0.25, 0));
+
+transferBelt.add(box(0.08, 0.08, 2.35, mat.yellow, -0.57, 0.37, 0));
+transferBelt.add(box(0.08, 0.08, 2.35, mat.yellow, 0.57, 0.37, 0));
+
+for (let i = 0; i < 7; i++) {
+  const r = cyl(
+    0.07,
+    1.02,
+    mat.dark,
+    0,
+    0.34,
+    -1.02 + i * 0.34,
+    Math.PI / 2
+  );
+
+  transferBelt.add(r);
+  rollers.push(r);
+}
 
 /* ---------- MACHINES ---------- */
 
@@ -742,40 +758,47 @@ function scannerTable() {
 function cutterOutput() {
   const g = new THREE.Group();
 
-  g.position.set(7.2, 0, -1.2);
+  g.position.set(7.55, 0, -1.38);
   scene.add(g);
 
-  g.add(box(3.4, 2.3, 1.55, mat.white, 0, 1.35, 0));
-  g.add(box(3.65, 0.2, 1.65, mat.white2, 0, 2.62, 0));
-  g.add(box(1.6, 1.05, 0.08, mat.dark, -0.35, 1.32, 0.85));
+  // main body
+  g.add(box(3.75, 2.25, 1.65, mat.white, 0, 1.35, 0));
+  g.add(box(4.0, 0.2, 1.82, mat.white2, 0, 2.6, 0));
 
+  // true hollow opening, bigger and centered over transfer belt
+  g.add(box(2.45, 1.05, 0.1, mat.dark, -0.15, 1.28, 0.88));
+
+  // inside tunnel pieces so it feels hollow
+  g.add(box(2.25, 0.08, 1.15, mat.belt, -0.15, 0.88, 0.35));
+  g.add(box(0.12, 1.0, 1.05, mat.darkGray, -1.35, 1.3, 0.38));
+  g.add(box(0.12, 1.0, 1.05, mat.darkGray, 1.05, 1.3, 0.38));
+  g.add(box(2.45, 0.1, 1.05, mat.darkGray, -0.15, 1.82, 0.38));
+
+  // yellow trim around opening
+  g.add(box(2.55, 0.08, 0.08, mat.yellow, -0.15, 1.86, 0.94));
+  g.add(box(0.08, 1.05, 0.08, mat.yellow, -1.43, 1.35, 0.94));
+  g.add(box(0.08, 1.05, 0.08, mat.yellow, 1.13, 1.35, 0.94));
+
+  // animated cutter arm
   const arm = new THREE.Group();
 
   arm.add(box(0.16, 1.15, 0.16, mat.gray, 0, 0.45, 0));
-  arm.add(box(0.65, 0.16, 0.16, mat.yellow, -0.24, -0.1, 0));
-  arm.add(box(0.28, 0.28, 0.28, mat.yellow2, -0.55, -0.12, 0));
+  arm.add(box(0.75, 0.16, 0.16, mat.yellow, -0.28, -0.1, 0));
+  arm.add(box(0.32, 0.32, 0.32, mat.yellow2, -0.65, -0.12, 0));
 
-  arm.position.set(0.85, 1.45, 0.58);
+  arm.position.set(1.05, 1.55, 0.58);
   arm.rotation.z = -0.25;
-
   g.add(arm);
 
-  const flap = box(1.45, 0.12, 1.05, mat.belt, -0.3, 0.88, 0.32);
-
+  const flap = box(1.55, 0.12, 1.0, mat.belt, -0.15, 0.98, 0.35);
   flap.rotation.z = -0.08;
-
   g.add(flap);
 
-  rail(g, 3.2, 0, 2.85, 0.92);
-  vents(g, 1.0, 1.42, 0.88);
+  controlPanel(g, -1.55, 1.1, 0.92);
+  vents(g, 1.25, 1.42, 0.93);
 
   return { g, arm, flap };
 }
-
-const machineA = feedChamber();
-const machineB = compressionPress();
-const machineC = scannerTable();
-const machineD = cutterOutput();
 
 /* ---------- BACKGROUND MACHINES ---------- */
 
@@ -886,9 +909,9 @@ const dragPoint = new THREE.Vector3();
 
 const forklift = new THREE.Group();
 
-forklift.position.set(-2.75, 0, 5.25);
-forklift.rotation.y = -0.35;
-forklift.scale.set(1.32, 1.32, 1.32);
+forklift.position.set(-3.55, 0, 5.55);
+forklift.rotation.y = -0.18;
+forklift.scale.set(1.38, 1.38, 1.38);
 
 scene.add(forklift);
 
@@ -928,8 +951,8 @@ forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
 
 const pallet = new THREE.Group();
 
-pallet.position.set(0.05, 0.32, 4.75);
-pallet.rotation.y = 0.08;
+pallet.position.set(-0.55, 0.24, 5.12);
+pallet.rotation.y = -0.18;
 pallet.scale.set(1.16, 1.16, 1.16);
 
 scene.add(pallet);
@@ -955,12 +978,12 @@ const by = 0.2 + layer * 0.32;
   crate.add(box(0.035, 0.28, 0.43, mat.dark, 0.13, 0.02, 0));
 
 crate.position.set(
-  0.05 + bx,
+  -0.55 + bx,
   pallet.position.y + by,
-  4.75 + bz
+  5.12 + bz
 );
 
-crate.rotation.y = 0.08;
+crate.rotation.y = -0.18;
 
   crate.userData.draggable = true;
   crate.userData.onConveyor = false;
@@ -1186,38 +1209,35 @@ packages.forEach((p) => {
     p.userData.pathStage = 0;
   }
 
-  // main conveyor: move right into the middle machine
   if (p.userData.pathStage === 0) {
     p.position.x += p.userData.speed;
     p.position.z = 0;
     p.position.y = 1.02;
 
-    if (p.position.x >= 6.55) {
+    if (p.position.x >= 6.95) {
       p.userData.pathStage = 1;
-      p.position.x = 6.55;
+      p.position.x = 6.95;
     }
   }
 
-  // transfer section: straight 90-degree turn back into the black opening
   else if (p.userData.pathStage === 1) {
     p.position.z -= p.userData.speed;
-    p.position.x = 6.55;
-    p.position.y = 1.05;
-    p.rotation.y += 0.025;
+    p.position.x = 6.95;
+    p.position.y = 1.08;
+    p.rotation.y += 0.022;
 
-    if (p.position.z <= -1.55) {
+    if (p.position.z <= -1.7) {
       p.userData.pathStage = 2;
-      p.position.z = -1.55;
+      p.position.z = -1.7;
     }
   }
 
-  // exit belt: move right through the next machine opening
   else if (p.userData.pathStage === 2) {
     p.position.x += p.userData.speed;
-    p.position.z = -1.55;
+    p.position.z = -1.7;
     p.position.y = 1.08;
 
-    if (p.position.x >= 8.55) {
+    if (p.position.x >= 8.7) {
       resetPackage(p);
       p.position.x = -9.6;
       p.position.z = 0;
@@ -1257,11 +1277,11 @@ packages.forEach((p) => {
     }
   });
 
-  camera.position.x = 7.2 + Math.sin(time * 0.08) * 0.2;
-  camera.position.y = 5.1 + Math.sin(time * 0.1) * 0.06;
-  camera.position.z = 15.8;
+camera.position.x = 4.6 + Math.sin(time * 0.08) * 0.12;
+camera.position.y = 5.6 + Math.sin(time * 0.1) * 0.04;
+camera.position.z = 17.4;
 
-  camera.lookAt(-1.2, 0.9, 0);
+camera.lookAt(-2.4, 1.15, 0.15);
 
   renderer.render(scene, camera);
 }
