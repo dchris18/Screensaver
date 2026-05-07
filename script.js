@@ -35,7 +35,7 @@ document.body.appendChild(renderer.domElement);
 const C = {
   floor: "#cdbda7",
 tileA: "#c9b899",
-tileB: "#8f8f86",
+tileB: "#7f8179",
 
   wall: "#d8c4aa",
   wall2: "#ead8bf",
@@ -417,46 +417,77 @@ addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
 
-/* ---------- TOP LEFT DETAIL AREA ---------- */
+/* ---------- FINISHED TOP LEFT / SIDE WALL AREA ---------- */
 
-const topLeftDetail = new THREE.Group();
-topLeftDetail.position.set(-13.2, 0, -5.6);
-scene.add(topLeftDetail);
+// left side wall that blocks the ugly white empty area
+scene.add(box(0.22, 7.5, 9.5, mat.wall, -16.9, 3.45, -4.4));
 
-// back display board
-topLeftDetail.add(box(3.2, 1.8, 0.12, mat.white2, 0, 2.4, 0));
-topLeftDetail.add(box(2.6, 1.1, 0.08, mat.dark, 0, 2.42, 0.08));
+// soft corner column
+scene.add(box(0.45, 7.6, 0.45, mat.gray, -15.7, 3.45, -7.2));
 
-// stacked storage shelf
-topLeftDetail.add(box(3.4, 0.18, 1.2, mat.gray, 0, 0.75, 0.45));
-topLeftDetail.add(box(3.4, 0.14, 1.2, mat.gray, 0, 1.35, 0.45));
-topLeftDetail.add(box(3.4, 0.14, 1.2, mat.gray, 0, 1.95, 0.45));
+// large top-left industrial display area
+const topLeftArea = new THREE.Group();
+topLeftArea.position.set(-13.9, 0, -5.65);
+scene.add(topLeftArea);
 
-for (let i = 0; i < 4; i++) {
-  topLeftDetail.add(box(0.12, 1.4, 0.12, mat.darkGray, -1.5 + i, 1.35, 0.45));
+// back panel
+topLeftArea.add(box(4.2, 2.25, 0.16, mat.white2, 0, 2.65, 0));
+topLeftArea.add(box(3.35, 1.35, 0.08, mat.dark, 0, 2.65, 0.1));
+
+// lower storage counter
+topLeftArea.add(box(4.4, 0.32, 1.55, mat.gray, 0, 0.55, 0.45));
+topLeftArea.add(box(4.1, 0.15, 1.3, mat.darkGray, 0, 0.82, 0.45));
+
+// stacked panels
+for (let i = 0; i < 9; i++) {
+  topLeftArea.add(
+    box(
+      1.9,
+      0.075,
+      1.05,
+      i % 2 === 0 ? mat.white2 : mat.gray,
+      -0.9 + i * 0.08,
+      1.02 + i * 0.08,
+      0.42
+    )
+  );
 }
 
-// boxes on shelf
-for (let i = 0; i < 8; i++) {
-  topLeftDetail.add(
+// shelf posts
+for (let i = 0; i < 4; i++) {
+  topLeftArea.add(
+    box(0.12, 1.55, 0.12, mat.darkGray, -1.85 + i * 1.2, 1.45, 0.95)
+  );
+}
+
+// top rail
+topLeftArea.add(box(4.2, 0.08, 0.08, mat.yellow, 0, 2.02, 1.0));
+topLeftArea.add(box(0.08, 1.35, 0.08, mat.gray, -2.05, 1.42, 1.0));
+topLeftArea.add(box(0.08, 1.35, 0.08, mat.gray, 2.05, 1.42, 1.0));
+
+// little storage boxes
+for (let i = 0; i < 10; i++) {
+  topLeftArea.add(
     box(
       0.42,
       0.32,
       0.42,
       i % 2 === 0 ? mat.yellow : mat.white2,
-      -1.25 + (i % 4) * 0.8,
-      1.02 + Math.floor(i / 4) * 0.6,
-      0.45
+      -1.55 + (i % 5) * 0.75,
+      1.1 + Math.floor(i / 5) * 0.5,
+      0.92
     )
   );
 }
 
-// warm light
-const topLeftLight = new THREE.PointLight("#e0a64a", 1.2, 5);
-topLeftLight.position.set(-13.2, 3.1, -5.1);
-scene.add(topLeftLight);
+// visible warm lamp
+topLeftArea.add(box(0.65, 0.12, 0.12, mat.yellow2, 0, 3.75, 0.18));
+topLeftArea.add(box(0.2, 0.35, 0.16, mat.gray, 0, 3.55, 0.1));
 
-topLeftDetail.add(box(0.55, 0.12, 0.12, mat.yellow2, 0, 3.2, 0.2));
+const topLeftGlow = new THREE.PointLight("#d89a45", 0.85, 5);
+topLeftGlow.position.set(-13.9, 3.55, -5.0);
+scene.add(topLeftGlow);
+glowLights.push(topLeftGlow);
 
 /* ---------- CONVEYORS ---------- */
 
@@ -608,81 +639,6 @@ function aperturePerson(x, z, scale = 1) {
   g.add(legR);
 
   return g;
-}
-
-/* ---------- PLANTS ---------- */
-
-function createPlant(x, z, scale = 1) {
-  const plant = new THREE.Group();
-  plant.position.set(x, 0, z);
-  plant.scale.set(scale, scale, scale);
-  scene.add(plant);
-
-  plant.add(box(0.5, 0.45, 0.5, mat.gray, 0, 0.23, 0));
-  plant.add(cyl(0.22, 0.07, mat.dark, 0, 0.49, 0));
-
-  for (let i = 0; i < 24; i++) {
-    const leaf = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.055, 0.55 + Math.random() * 0.24, 10, 18),
-      i % 2 === 0 ? mat.green : mat.green2
-    );
-
-    const angle = i * 0.52;
-    const radius = 0.06 + Math.random() * 0.18;
-
-    leaf.position.set(
-      Math.cos(angle) * radius,
-      0.74 + Math.random() * 0.22,
-      Math.sin(angle) * radius
-    );
-
-    leaf.rotation.y = angle;
-    leaf.rotation.x = 0.35 + Math.random() * 0.45;
-    leaf.rotation.z = -0.85 + Math.random() * 1.7;
-
-    leaf.castShadow = true;
-    plant.add(leaf);
-  }
-
-  return plant;
-}
-
-function createVines(x, z, count = 7) {
-  const vines = new THREE.Group();
-
-  vines.position.set(x, 5.8, z);
-  scene.add(vines);
-
-  for (let i = 0; i < count; i++) {
-    const strand = new THREE.Group();
-
-    strand.position.set(
-      (Math.random() - 0.5) * 1.4,
-      0,
-      (Math.random() - 0.5) * 0.25
-    );
-
-    vines.add(strand);
-
-    const length = 5 + Math.floor(Math.random() * 5);
-
-    for (let j = 0; j < length; j++) {
-      const leaf = capsule(
-        0.035,
-        0.28,
-        j % 2 === 0 ? mat.green : mat.green2,
-        Math.sin(j * 0.8) * 0.05,
-        -j * 0.22,
-        0
-      );
-
-      leaf.rotation.z = Math.sin(j) * 0.45;
-
-      strand.add(leaf);
-    }
-  }
-
-  return vines;
 }
 
 /* ---------- MAIN LAYOUT ---------- */
@@ -869,11 +825,6 @@ const hangingPanel = box(1.1, 0.06, 0.85, mat.yellow2, 1.2, 1.72, 0);
 
 hangingPanel.rotation.z = -0.25;
 storageArea.add(hangingPanel);
-
-// warning stripe rail
-topLeftDetail.add(box(3.4, 0.08, 0.08, mat.yellow, 0, 1.55, 0.68));
-topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, -1.55, 1.05, 0.68));
-topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, 1.55, 1.05, 0.68));
 
 /* ---------- PROPS ---------- */
 
@@ -1327,7 +1278,7 @@ packages.forEach((p) => {
     p.position.y = 1.13;
   }
 
-  if (p.position.x > 8.25) {
+  if (p.position.x > 8.15) {
     p.position.x = -9.4;
     p.position.z = 0;
     p.position.y = 1.02;
@@ -1356,7 +1307,7 @@ packages.forEach((p) => {
 
   if (p.userData.stage === 4) {
     p.rotation.y += 0.003;
-    p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.025;
+    p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.02;
   }
 });
 
