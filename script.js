@@ -847,6 +847,34 @@ for (let i = 0; i < 4; i++) {
   );
 }
 
+function createPlant(x, z, scale = 1) {
+  const plant = new THREE.Group();
+  plant.position.set(x, 0, z);
+  plant.scale.set(scale, scale, scale);
+  scene.add(plant);
+
+  plant.add(cyl(0.28, 0.45, mat.gray, 0, 0.23, 0));
+
+  const leafMat = new THREE.MeshStandardMaterial({
+    color: "#6f9f5f",
+    roughness: 0.55
+  });
+
+  for (let i = 0; i < 9; i++) {
+    const leaf = box(0.12, 0.55, 0.05, leafMat, 0, 0.72, 0);
+    leaf.rotation.z = -0.75 + i * 0.18;
+    leaf.rotation.y = i * 0.7;
+    plant.add(leaf);
+  }
+
+  return plant;
+}
+
+createPlant(-12.4, 2.1, 1.1);
+createPlant(-9.7, -2.8, 0.85);
+createPlant(4.7, -3.2, 0.9);
+createPlant(9.9, 2.6, 0.8);
+
 // BARRELS
 for (let i = 0; i < 8; i++) {
   scene.add(
@@ -1037,7 +1065,7 @@ driver.add(box(0.24, 0.38, 0.08, mat.black, 0, 0.2, 0));
 
 // pallet on forks
 const pallet = new THREE.Group();
-pallet.position.set(3.95, 0.48, 4.1);
+pallet.position.set(0.65, 0.48, 4.1);
 pallet.rotation.y = -0.65;
 pallet.scale.set(1.15, 1.15, 1.15);
 scene.add(pallet);
@@ -1069,7 +1097,7 @@ for (let i = 0; i < 12; i++) {
   crate.add(seam);
 
 crate.position.set(
-  3.95 + bx,
+  0.65 + bx,
   pallet.position.y + by,
   4.1 + bz
 );
@@ -1294,6 +1322,22 @@ picker.userData.claw.position.y =
 
   camera.lookAt(0, 0.8, 0);
 
+// BACKGROUND ANIMATION
+
+glowLights.forEach((l, i) => {
+  l.intensity =
+    0.45 +
+    Math.sin(time * 2 + i) * 0.08;
+});
+
+movingIndicators.forEach((line) => {
+  line.position.x += line.userData.speed;
+
+  if (line.position.x > 18) {
+    line.position.x = -18;
+  }
+});
+
   renderer.render(scene, camera);
 }
 function getMouse(event) {
@@ -1391,19 +1435,6 @@ window.addEventListener("resize", () => {
 
 // BACKGROUND ANIMATION
 
-glowLights.forEach((l, i) => {
-  l.intensity =
-    0.45 +
-    Math.sin(time * 2 + i) * 0.08;
-});
-
-movingIndicators.forEach((line) => {
-  line.position.x += line.userData.speed;
-
-  if (line.position.x > 18) {
-    line.position.x = -18;
-  }
-});
 
   renderer.setSize(
     window.innerWidth,
