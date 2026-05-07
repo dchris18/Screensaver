@@ -417,77 +417,89 @@ addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
 
-/* ---------- FINISHED TOP LEFT / SIDE WALL AREA ---------- */
+/* ---------- TOP LEFT INDUSTRIAL STAIR / CATWALK ---------- */
 
-// left side wall that blocks the ugly white empty area
-scene.add(box(0.22, 7.5, 9.5, mat.wall, -16.9, 3.45, -4.4));
+const stairTower = new THREE.Group();
+stairTower.position.set(-14.2, 0, -4.95);
+scene.add(stairTower);
 
-// soft corner column
-scene.add(box(0.45, 7.6, 0.45, mat.gray, -15.7, 3.45, -7.2));
+// back support wall panel
+stairTower.add(box(3.8, 3.2, 0.12, mat.wall2, 0, 2.25, -0.35));
 
-// large top-left industrial display area
-const topLeftArea = new THREE.Group();
-topLeftArea.position.set(-13.9, 0, -5.65);
-scene.add(topLeftArea);
+// upper platform
+stairTower.add(box(3.5, 0.18, 1.25, mat.gray, 0.1, 2.55, 0.25));
+stairTower.add(box(3.2, 0.08, 1.05, mat.darkGray, 0.1, 2.7, 0.25));
 
-// back panel
-topLeftArea.add(box(4.2, 2.25, 0.16, mat.white2, 0, 2.65, 0));
-topLeftArea.add(box(3.35, 1.35, 0.08, mat.dark, 0, 2.65, 0.1));
+// stair side beams
+const leftBeam = box(2.8, 0.08, 0.08, mat.darkGray, -0.75, 1.55, 0.55);
+leftBeam.rotation.z = -0.55;
+stairTower.add(leftBeam);
 
-// lower storage counter
-topLeftArea.add(box(4.4, 0.32, 1.55, mat.gray, 0, 0.55, 0.45));
-topLeftArea.add(box(4.1, 0.15, 1.3, mat.darkGray, 0, 0.82, 0.45));
+const rightBeam = box(2.8, 0.08, 0.08, mat.darkGray, 0.15, 1.55, 0.55);
+rightBeam.rotation.z = -0.55;
+stairTower.add(rightBeam);
 
-// stacked panels
-for (let i = 0; i < 9; i++) {
-  topLeftArea.add(
+// stair steps
+for (let i = 0; i < 8; i++) {
+  stairTower.add(
     box(
-      1.9,
-      0.075,
-      1.05,
-      i % 2 === 0 ? mat.white2 : mat.gray,
-      -0.9 + i * 0.08,
-      1.02 + i * 0.08,
-      0.42
+      0.95,
+      0.08,
+      0.42,
+      mat.gray,
+      -1.05 + i * 0.25,
+      0.72 + i * 0.22,
+      0.55
     )
   );
 }
 
-// shelf posts
+// platform legs
 for (let i = 0; i < 4; i++) {
-  topLeftArea.add(
-    box(0.12, 1.55, 0.12, mat.darkGray, -1.85 + i * 1.2, 1.45, 0.95)
+  stairTower.add(
+    box(
+      0.12,
+      2.55,
+      0.12,
+      mat.darkGray,
+      -1.45 + (i % 2) * 3.0,
+      1.25,
+      -0.3 + Math.floor(i / 2) * 1.05
+    )
+  );
+}
+
+// rail posts
+for (let i = 0; i < 6; i++) {
+  stairTower.add(
+    box(
+      0.07,
+      0.75,
+      0.07,
+      mat.darkGray,
+      -1.4 + i * 0.62,
+      3.05,
+      0.82
+    )
   );
 }
 
 // top rail
-topLeftArea.add(box(4.2, 0.08, 0.08, mat.yellow, 0, 2.02, 1.0));
-topLeftArea.add(box(0.08, 1.35, 0.08, mat.gray, -2.05, 1.42, 1.0));
-topLeftArea.add(box(0.08, 1.35, 0.08, mat.gray, 2.05, 1.42, 1.0));
+stairTower.add(box(3.3, 0.07, 0.07, mat.yellow, 0.1, 3.45, 0.82));
 
-// little storage boxes
-for (let i = 0; i < 10; i++) {
-  topLeftArea.add(
-    box(
-      0.42,
-      0.32,
-      0.42,
-      i % 2 === 0 ? mat.yellow : mat.white2,
-      -1.55 + (i % 5) * 0.75,
-      1.1 + Math.floor(i / 5) * 0.5,
-      0.92
-    )
-  );
-}
+// side rail on stairs
+const stairRail = box(2.7, 0.06, 0.06, mat.yellow, -0.55, 2.0, 0.88);
+stairRail.rotation.z = -0.55;
+stairTower.add(stairRail);
 
-// visible warm lamp
-topLeftArea.add(box(0.65, 0.12, 0.12, mat.yellow2, 0, 3.75, 0.18));
-topLeftArea.add(box(0.2, 0.35, 0.16, mat.gray, 0, 3.55, 0.1));
+// small control box / light
+stairTower.add(box(0.42, 0.55, 0.16, mat.darkGray, 1.35, 2.15, 0.9));
+stairTower.add(box(0.22, 0.14, 0.08, mat.yellow2, 1.35, 2.28, 1.0));
 
-const topLeftGlow = new THREE.PointLight("#d89a45", 0.85, 5);
-topLeftGlow.position.set(-13.9, 3.55, -5.0);
-scene.add(topLeftGlow);
-glowLights.push(topLeftGlow);
+const stairLight = new THREE.PointLight("#d89a45", 0.75, 4);
+stairLight.position.set(-14.0, 3.0, -4.2);
+scene.add(stairLight);
+glowLights.push(stairLight);
 
 /* ---------- CONVEYORS ---------- */
 
