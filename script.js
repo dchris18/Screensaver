@@ -870,46 +870,6 @@ const hangingPanel = box(1.1, 0.06, 0.85, mat.yellow2, 1.2, 1.72, 0);
 hangingPanel.rotation.z = -0.25;
 storageArea.add(hangingPanel);
 
-// TOP LEFT INDUSTRIAL STORAGE WALL
-const topLeftDetail = new THREE.Group();
-topLeftDetail.position.set(-13.4, 0, -3.8);
-scene.add(topLeftDetail);
-
-// low storage platform
-topLeftDetail.add(box(3.4, 0.28, 1.4, mat.gray, 0, 0.14, 0));
-topLeftDetail.add(box(3.1, 0.12, 1.2, mat.darkGray, 0, 0.38, 0));
-
-// stacked panels/crates
-for (let i = 0; i < 7; i++) {
-  topLeftDetail.add(
-    box(
-      1.7,
-      0.08,
-      1.0,
-      i % 2 === 0 ? mat.white2 : mat.gray,
-      -0.3 + i * 0.08,
-      0.55 + i * 0.09,
-      0
-    )
-  );
-}
-
-// wall pipes
-for (let i = 0; i < 4; i++) {
-  topLeftDetail.add(
-    cyl(
-      0.035,
-      3.2,
-      mat.darkGray,
-      -1.5 + i * 0.45,
-      2.15,
-      -0.55,
-      0,
-      Math.PI / 2
-    )
-  );
-}
-
 // warning stripe rail
 topLeftDetail.add(box(3.4, 0.08, 0.08, mat.yellow, 0, 1.55, 0.68));
 topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, -1.55, 1.05, 0.68));
