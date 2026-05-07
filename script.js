@@ -742,61 +742,113 @@ let selectedBox = null;
 let dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.02);
 let dragPoint = new THREE.Vector3();
 
+// forklift group
 const forklift = new THREE.Group();
-forklift.position.set(2.8, 0, 4.8);
-forklift.scale.set(1.25, 1.25, 1.25);
-forklift.rotation.y = -0.35;
+forklift.position.set(6.2, 0, 4.85);
+forklift.rotation.y = -0.65;
+forklift.scale.set(1.15, 1.15, 1.15);
 scene.add(forklift);
 
-// forklift body
-forklift.add(box(1.35, 0.65, 0.9, mat.yellow, 0, 0.55, 0));
-forklift.add(box(0.65, 1.05, 0.75, mat.yellow2, -0.25, 1.15, 0));
-forklift.add(box(0.45, 0.55, 0.08, mat.dark, -0.25, 1.25, 0.42));
+// lower chassis
+forklift.add(box(1.65, 0.42, 0.9, mat.yellow, 0, 0.38, 0));
+forklift.add(box(1.25, 0.22, 0.78, mat.yellow2, 0.1, 0.68, 0));
 
-// wheels
-forklift.add(cyl(0.23, 0.18, mat.dark, -0.5, 0.2, -0.48, Math.PI / 2));
-forklift.add(cyl(0.23, 0.18, mat.dark, 0.55, 0.2, -0.48, Math.PI / 2));
-forklift.add(cyl(0.23, 0.18, mat.dark, -0.5, 0.2, 0.48, Math.PI / 2));
-forklift.add(cyl(0.23, 0.18, mat.dark, 0.55, 0.2, 0.48, Math.PI / 2));
+// rear body/counterweight
+forklift.add(box(0.75, 0.95, 0.9, mat.yellow, -0.55, 0.92, 0));
+forklift.add(box(0.58, 0.45, 0.08, mat.dark, -0.62, 1.05, 0.48));
+
+// seat + driver area
+forklift.add(box(0.38, 0.18, 0.38, mat.dark, 0.12, 0.93, 0));
+forklift.add(box(0.16, 0.45, 0.16, mat.dark, 0.02, 1.16, -0.12));
+forklift.add(cyl(0.13, 0.06, mat.dark, 0.3, 1.22, 0.05, Math.PI / 2));
+
+// overhead cage
+forklift.add(box(0.08, 1.2, 0.08, mat.darkGray, -0.25, 1.42, -0.42));
+forklift.add(box(0.08, 1.2, 0.08, mat.darkGray, 0.55, 1.42, -0.42));
+forklift.add(box(0.08, 1.2, 0.08, mat.darkGray, -0.25, 1.42, 0.42));
+forklift.add(box(0.08, 1.2, 0.08, mat.darkGray, 0.55, 1.42, 0.42));
+forklift.add(box(0.95, 0.08, 0.9, mat.darkGray, 0.15, 2.02, 0));
 
 // mast
-forklift.add(box(0.1, 1.75, 0.1, mat.darkGray, 0.82, 1.0, -0.42));
-forklift.add(box(0.1, 1.75, 0.1, mat.darkGray, 0.82, 1.0, 0.42));
+forklift.add(box(0.11, 1.85, 0.1, mat.darkGray, 0.85, 1.1, -0.36));
+forklift.add(box(0.11, 1.85, 0.1, mat.darkGray, 0.85, 1.1, 0.36));
+forklift.add(box(0.82, 0.08, 0.08, mat.darkGray, 0.85, 1.9, 0));
+forklift.add(box(0.82, 0.08, 0.08, mat.darkGray, 0.85, 0.55, 0));
+
+// lift carriage
+forklift.add(box(0.12, 0.62, 0.82, mat.gray, 1.02, 0.82, 0));
 
 // forks
-forklift.add(box(1.45, 0.06, 0.08, mat.darkGray, 1.35, 0.42, -0.25));
-forklift.add(box(1.45, 0.06, 0.08, mat.darkGray, 1.35, 0.42, 0.25));
+forklift.add(box(1.55, 0.055, 0.08, mat.darkGray, 1.62, 0.45, -0.22));
+forklift.add(box(1.55, 0.055, 0.08, mat.darkGray, 1.62, 0.45, 0.22));
 
-// pallet
+// wheels
+forklift.add(cyl(0.3, 0.18, mat.dark, -0.58, 0.2, -0.5, Math.PI / 2));
+forklift.add(cyl(0.3, 0.18, mat.dark, 0.55, 0.2, -0.5, Math.PI / 2));
+forklift.add(cyl(0.3, 0.18, mat.dark, -0.58, 0.2, 0.5, Math.PI / 2));
+forklift.add(cyl(0.3, 0.18, mat.dark, 0.55, 0.2, 0.5, Math.PI / 2));
+
+forklift.add(cyl(0.18, 0.2, mat.yellow2, -0.58, 0.2, -0.51, Math.PI / 2));
+forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, -0.51, Math.PI / 2));
+forklift.add(cyl(0.18, 0.2, mat.yellow2, -0.58, 0.2, 0.51, Math.PI / 2));
+forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
+
+// small driver silhouette
+const driver = new THREE.Group();
+driver.position.set(0.12, 0.95, 0);
+forklift.add(driver);
+
+driver.add(new THREE.Mesh(new THREE.SphereGeometry(0.13, 18, 18), mat.black));
+driver.children[0].position.set(0, 0.48, 0);
+driver.add(box(0.24, 0.38, 0.08, mat.black, 0, 0.2, 0));
+
+// pallet on forks
 const pallet = new THREE.Group();
-pallet.position.set(4.4, 0.45, 4.45);
-pallet.scale.set(1.25, 1.25, 1.25);
+pallet.position.set(7.95, 0.48, 4.1);
+pallet.rotation.y = -0.65;
+pallet.scale.set(1.15, 1.15, 1.15);
 scene.add(pallet);
 
-pallet.add(box(1.5, 0.12, 1.15, mat.darkGray, 0, 0, 0));
-pallet.add(box(1.45, 0.05, 0.12, mat.gray, 0, 0.12, -0.45));
-pallet.add(box(1.45, 0.05, 0.12, mat.gray, 0, 0.12, 0));
-pallet.add(box(1.45, 0.05, 0.12, mat.gray, 0, 0.12, 0.45));
+// pallet base
+pallet.add(box(1.65, 0.12, 1.2, mat.darkGray, 0, 0, 0));
+pallet.add(box(1.55, 0.06, 0.12, mat.gray, 0, 0.13, -0.45));
+pallet.add(box(1.55, 0.06, 0.12, mat.gray, 0, 0.13, 0));
+pallet.add(box(1.55, 0.06, 0.12, mat.gray, 0, 0.13, 0.45));
 
-// draggable pallet boxes
-for (let i = 0; i < 6; i++) {
-  const bx = -0.45 + (i % 3) * 0.45;
-  const by = 0.42 + Math.floor(i / 3) * 0.36;
-  const bz = i < 3 ? -0.22 : 0.22;
+// stack of boxes on pallet
+for (let i = 0; i < 12; i++) {
+  const col = i % 3;
+  const row = Math.floor(i / 3) % 2;
+  const layer = Math.floor(i / 6);
+
+  const bx = -0.5 + col * 0.5;
+  const bz = -0.25 + row * 0.5;
+  const by = 0.38 + layer * 0.36;
 
   const crate = new THREE.Group();
 
-  const body = box(0.36, 0.3, 0.36, mat.yellow);
-  const top = box(0.26, 0.04, 0.26, mat.yellow2, 0, 0.17, 0);
+  const body = box(0.42, 0.3, 0.42, mat.yellow);
+  const lid = box(0.3, 0.04, 0.3, mat.yellow2, 0, 0.17, 0);
+  const seam = box(0.035, 0.28, 0.43, mat.dark, 0.13, 0.02, 0);
 
   crate.add(body);
-  crate.add(top);
+  crate.add(lid);
+  crate.add(seam);
 
-crate.position.set(4.4 + bx, by + 0.12, 4.45 + bz);
-crate.scale.set(1.25, 1.25, 1.25);
+  crate.position.set(
+    pallet.position.x + bx,
+    pallet.position.y + by,
+    pallet.position.z + bz
+  );
+
+  crate.rotation.y = pallet.rotation.y;
+
   crate.userData.draggable = true;
   crate.userData.onConveyor = false;
   crate.userData.speed = 0.022;
+  crate.userData.stage = 0;
+  crate.userData.scanned = false;
+  crate.userData.assembled = false;
 
   scene.add(crate);
   draggableBoxes.push(crate);
