@@ -639,6 +639,16 @@ conveyor(2.7, 0.52, 0, 8.5, 0);
 conveyor(7.3, 0.82, -2.4, 4.8, -0.5);
 conveyor(-7.5, 0.45, -3.5, 4.2, 0.25);
 
+// visible 90-degree transfer belt into the right-side machine
+const transferBelt = new THREE.Group();
+transferBelt.position.set(6.55, 0.55, -0.75);
+scene.add(transferBelt);
+
+transferBelt.add(box(1.25, 0.28, 2.25, mat.white2, 0, 0, 0));
+transferBelt.add(box(0.92, 0.08, 2.05, mat.belt, 0, 0.25, 0));
+transferBelt.add(box(0.08, 0.08, 2.1, mat.yellow, -0.52, 0.36, 0));
+transferBelt.add(box(0.08, 0.08, 2.1, mat.yellow, 0.52, 0.36, 0));
+
 /* ---------- MACHINES ---------- */
 
 function feedChamber() {
@@ -798,25 +808,6 @@ for (let i = 0; i < 8; i++) {
   );
 }
 
-for (let i = 0; i < 18; i++) {
-  const rock = box(
-    0.18 + Math.random() * 0.18,
-    0.12 + Math.random() * 0.15,
-    0.18 + Math.random() * 0.18,
-    mat.white2,
-    -6.2 + Math.random() * 1.8,
-    0.08,
-    3.2 + Math.random() * 1.4
-  );
-
-  rock.rotation.set(
-    Math.random(),
-    Math.random(),
-    Math.random()
-  );
-
-  scene.add(rock);
-}
 
 /* ---------- HOPPER / PICKER ARM ---------- */
 
@@ -937,8 +928,8 @@ forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
 
 const pallet = new THREE.Group();
 
-pallet.position.set(-0.85, 0.42, 4.55);
-pallet.rotation.y = -0.35;
+pallet.position.set(0.05, 0.32, 4.75);
+pallet.rotation.y = 0.08;
 pallet.scale.set(1.16, 1.16, 1.16);
 
 scene.add(pallet);
@@ -955,7 +946,7 @@ for (let i = 0; i < 12; i++) {
 
   const bx = -0.5 + col * 0.5;
   const bz = -0.25 + row * 0.5;
-const by = 0.28 + layer * 0.34;
+const by = 0.2 + layer * 0.32;
 
   const crate = new THREE.Group();
 
@@ -964,12 +955,12 @@ const by = 0.28 + layer * 0.34;
   crate.add(box(0.035, 0.28, 0.43, mat.dark, 0.13, 0.02, 0));
 
 crate.position.set(
-  -0.85 + bx,
+  0.05 + bx,
   pallet.position.y + by,
-  4.55 + bz
+  4.75 + bz
 );
 
-crate.rotation.y = -0.35;
+crate.rotation.y = 0.08;
 
   crate.userData.draggable = true;
   crate.userData.onConveyor = false;
@@ -1191,42 +1182,42 @@ function animate() {
 packages.forEach((p) => {
   if (selectedBox === p) return;
 
-  // stage 0: main conveyor, moving right
   if (p.userData.pathStage === undefined) {
     p.userData.pathStage = 0;
   }
 
+  // main conveyor: move right into the middle machine
   if (p.userData.pathStage === 0) {
     p.position.x += p.userData.speed;
     p.position.z = 0;
     p.position.y = 1.02;
 
-    if (p.position.x >= 5.15) {
+    if (p.position.x >= 6.55) {
       p.userData.pathStage = 1;
-      p.position.x = 5.15;
+      p.position.x = 6.55;
     }
   }
 
-  // stage 1: 90-degree turn, moving back into next belt
+  // transfer section: straight 90-degree turn back into the black opening
   else if (p.userData.pathStage === 1) {
     p.position.z -= p.userData.speed;
-    p.position.x = 5.15;
-    p.position.y = 1.08;
+    p.position.x = 6.55;
+    p.position.y = 1.05;
     p.rotation.y += 0.025;
 
-    if (p.position.z <= -1.35) {
+    if (p.position.z <= -1.55) {
       p.userData.pathStage = 2;
-      p.position.z = -1.35;
+      p.position.z = -1.55;
     }
   }
 
-  // stage 2: exit conveyor, moving right again
+  // exit belt: move right through the next machine opening
   else if (p.userData.pathStage === 2) {
     p.position.x += p.userData.speed;
-    p.position.z = -1.35;
-    p.position.y = 1.13;
+    p.position.z = -1.55;
+    p.position.y = 1.08;
 
-    if (p.position.x >= 8.05) {
+    if (p.position.x >= 8.55) {
       resetPackage(p);
       p.position.x = -9.6;
       p.position.z = 0;
