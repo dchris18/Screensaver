@@ -1173,54 +1173,84 @@ function animate() {
     r.rotation.z += 0.08 + i * 0.01;
   });
 
-// press: slow slide, sharp stamp
-machineB.gantry.position.x = Math.sin(time * 0.9) * 0.28;
+  // press: slow slide, sharp stamp
+  machineB.gantry.position.x = Math.sin(time * 0.9) * 0.28;
 
-const pressPulse = Math.abs(Math.sin(time * 2.2));
-machineB.plate.position.y = 1.7 - pressPulse * 0.28;
+  const pressPulse = Math.abs(Math.sin(time * 2.2));
+  machineB.plate.position.y = 1.7 - pressPulse * 0.28;
 
-// scanner: sweeping bar
-machineC.scanner.position.x = Math.sin(time * 1.7) * 0.95;
-machineC.scanner.position.y = 1.78;
+  // scanner: sweeping bar
+  machineC.scanner.position.x = Math.sin(time * 1.7) * 0.95;
+  machineC.scanner.position.y = 1.78;
 
-// cutter/output arm: controlled mechanical motion
-machineD.arm.rotation.z = -0.25 + Math.sin(time * 1.4) * 0.28;
-machineD.flap.rotation.z = -0.08 + Math.sin(time * 1.1) * 0.08;
+  // cutter/output arm
+  machineD.arm.rotation.z = -0.25 + Math.sin(time * 1.4) * 0.28;
+  machineD.flap.rotation.z = -0.08 + Math.sin(time * 1.1) * 0.08;
 
-packages.forEach((p) => {
-  if (selectedBox === p) return;
+  packages.forEach((p) => {
+    if (selectedBox === p) return;
 
-  p.position.x += p.userData.speed;
+    p.position.x += p.userData.speed;
 
-  // conveyor path: straight belt, then curved-looking transfer, then exit belt
-  if (p.position.x < 4.85) {
-    p.position.z = 0;
-    p.position.y = 1.02;
-    p.rotation.z = 0;
-  } else if (p.position.x < 6.25) {
-    const t = (p.position.x - 4.85) / 1.4;
-    p.position.z = THREE.MathUtils.lerp(0, -1.1, t);
-    p.position.y = THREE.MathUtils.lerp(1.02, 1.13, t);
-    p.rotation.y += 0.01;
-  } else if (p.position.x < 8.05) {
-    p.position.z = -1.1;
-    p.position.y = 1.13;
-    p.rotation.z = Math.sin(time * 3 + p.position.x) * 0.015;
-  }
+    if (p.position.x < 4.85) {
+      p.position.z = 0;
+      p.position.y = 1.02;
+      p.rotation.z = 0;
+    } else if (p.position.x < 6.25) {
+      const t = (p.position.x - 4.85) / 1.4;
+      p.position.z = THREE.MathUtils.lerp(0, -1.1, t);
+      p.position.y = THREE.MathUtils.lerp(1.02, 1.13, t);
+      p.rotation.y += 0.01;
+    } else if (p.position.x < 8.05) {
+      p.position.z = -1.1;
+      p.position.y = 1.13;
+      p.rotation.z = Math.sin(time * 3 + p.position.x) * 0.015;
+    }
 
-  // reset BEFORE it visually leaves the belt
-  if (p.position.x >= 8.05) {
-    resetPackage(p);
-    p.position.x = -9.6;
-    return;
-  }
+    if (p.position.x >= 8.05) {
+      resetPackage(p);
+      p.position.x = -9.6;
+      return;
+    }
 
-  animatePackageStages(p);
+    animatePackageStages(p);
 
-  if (p.userData.stage === 1) p.rotation.y += 0.004;
-  if (p.userData.stage === 2) p.rotation.y += 0.006;
-  if (p.userData.stage === 3) p.rotation.y += 0.008;
-});
+    if (p.userData.stage === 1) p.rotation.y += 0.004;
+    if (p.userData.stage === 2) p.rotation.y += 0.006;
+    if (p.userData.stage === 3) p.rotation.y += 0.008;
+  });
+
+  picker.rotation.y = Math.sin(time * 0.5) * 0.08;
+
+  picker.userData.lowerArm.rotation.z =
+    -0.9 + Math.sin(time * 1.4) * 0.18;
+
+  picker.userData.upperGroup.rotation.z =
+    Math.sin(time * 1.8) * 0.25;
+
+  picker.userData.claw.position.y =
+    1.02 + Math.sin(time * 2.2) * 0.08;
+
+  glowLights.forEach((l, i) => {
+    l.intensity = 0.65 + Math.sin(time * 2 + i) * 0.12;
+  });
+
+  movingIndicators.forEach((line) => {
+    line.position.x += line.userData.speed;
+
+    if (line.position.x > 18) {
+      line.position.x = -18;
+    }
+  });
+
+  camera.position.x = 7.2 + Math.sin(time * 0.08) * 0.2;
+  camera.position.y = 5.1 + Math.sin(time * 0.1) * 0.06;
+  camera.position.z = 15.8;
+
+  camera.lookAt(-1.2, 0.9, 0);
+
+  renderer.render(scene, camera);
+}
 
 animate();
 
