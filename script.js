@@ -1325,7 +1325,6 @@ packages.forEach((p) => {
 
   p.position.x += p.userData.speed;
 
-  // keep every moving package locked to the belt path
   if (p.position.x <= 5.0) {
     p.position.z = 0;
     p.position.y = 1.02;
@@ -1334,13 +1333,13 @@ packages.forEach((p) => {
     p.position.y = 1.13;
   }
 
-  // reset before it visually falls off the final belt
   if (p.position.x > 8.25) {
     p.position.x = -9.4;
     p.position.z = 0;
     p.position.y = 1.02;
     p.rotation.set(0, 0, 0);
     p.scale.set(1, 1, 1);
+
     p.userData.stage = 0;
     p.userData.scanned = false;
     p.userData.assembled = false;
@@ -1364,28 +1363,6 @@ packages.forEach((p) => {
   if (p.userData.stage === 4) {
     p.rotation.y += 0.003;
     p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.025;
-  }
-});
-
-  animatePackageStages(p);
-
-  if (p.position.x > 5.0) {
-    p.position.z = -0.62;
-    p.position.y = 1.13;
-  } else {
-    p.position.z = 0;
-    p.position.y = 1.02;
-  }
-
-  p.position.z = THREE.MathUtils.clamp(p.position.z, -0.7, 0.25);
-
-  if (p.userData.stage === 1) p.rotation.y += 0.003;
-  if (p.userData.stage === 2) p.rotation.y += 0.005;
-  if (p.userData.stage === 3) p.rotation.y += 0.006;
-
-  if (p.userData.stage === 4) {
-    p.rotation.y += 0.004;
-    p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.04;
   }
 });
 
