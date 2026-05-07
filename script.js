@@ -306,11 +306,6 @@ scene.add(box(34, 7.5, 0.18, mat.wall, 0, 3.45, -8.9));
 scene.add(box(0.22, 7.5, 10.5, mat.wall, -16.9, 3.45, -3.9));
 scene.add(box(0.42, 7.6, 0.42, mat.gray, -16.45, 3.45, -7.35));
 
-// LEFT WALL VISIBLE DETAIL PANEL - this sits ON the blank wall area
-const leftWallDetail = new THREE.Group();
-leftWallDetail.position.set(-16.72, 0, 0.1);
-scene.add(leftWallDetail);
-
 // large wall-mounted utility panel
 leftWallDetail.add(box(0.08, 2.4, 2.4, mat.white2, 0, 3.0, 0));
 leftWallDetail.add(box(0.09, 1.55, 1.65, mat.dark, 0.05, 3.0, 0));
@@ -484,11 +479,53 @@ addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
 
-/* ---------- TOP LEFT INDUSTRIAL STAIR / CATWALK ---------- */
+/* ---------- GUARANTEED VISIBLE TOP LEFT FEATURE ---------- */
 
-const stairTower = new THREE.Group();
-stairTower.position.set(-10.9, 0, -2.65);
-scene.add(stairTower);
+const topLeftFeature = new THREE.Group();
+topLeftFeature.position.set(-13.7, 0, -2.2);
+scene.add(topLeftFeature);
+
+// tall industrial service tower
+topLeftFeature.add(box(2.2, 4.2, 1.0, mat.white2, 0, 2.1, 0));
+topLeftFeature.add(box(2.4, 0.18, 1.1, mat.yellow, 0, 4.28, 0));
+
+// big black screen
+topLeftFeature.add(box(1.55, 1.05, 0.08, mat.dark, 0, 2.65, 0.56));
+
+// lower cabinet
+topLeftFeature.add(box(1.8, 0.9, 0.9, mat.gray, 0, 0.55, 0));
+topLeftFeature.add(box(1.45, 0.55, 0.08, mat.dark, 0, 0.62, 0.5));
+
+// catwalk platform
+topLeftFeature.add(box(3.4, 0.16, 1.0, mat.gray, 0.45, 3.65, 0.15));
+topLeftFeature.add(box(3.2, 0.08, 0.85, mat.darkGray, 0.45, 3.78, 0.15));
+
+// railing
+for (let i = 0; i < 6; i++) {
+  topLeftFeature.add(
+    box(0.06, 0.65, 0.06, mat.darkGray, -1.0 + i * 0.55, 4.08, 0.65)
+  );
+}
+
+topLeftFeature.add(box(3.1, 0.06, 0.06, mat.yellow, 0.35, 4.42, 0.65));
+
+// visible pipes
+for (let i = 0; i < 4; i++) {
+  topLeftFeature.add(
+    box(0.08, 2.2, 0.08, mat.darkGray, -0.8 + i * 0.45, 2.15, 0.64)
+  );
+}
+
+// warning lights
+topLeftFeature.add(box(0.25, 0.22, 0.12, mat.red, -0.65, 1.45, 0.62));
+topLeftFeature.add(box(0.25, 0.22, 0.12, mat.yellow2, -0.25, 1.45, 0.62));
+topLeftFeature.add(box(0.25, 0.22, 0.12, mat.yellow2, 0.15, 1.45, 0.62));
+
+// warm light
+const topLeftFeatureLight = new THREE.PointLight("#d89a45", 1.2, 5);
+topLeftFeatureLight.position.set(-13.7, 3.8, -1.5);
+scene.add(topLeftFeatureLight);
+glowLights.push(topLeftFeatureLight);
 
 // back support wall panel
 stairTower.add(box(4.4, 3.4, 0.14, mat.white2, 0, 2.25, -0.35));
