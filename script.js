@@ -13,8 +13,8 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.set(7.2, 5.1, 15.8);
-camera.lookAt(-1.2, 0.9, 0);
+camera.position.set(5.8, 5.4, 16.8);
+camera.lookAt(-2.8, 1.2, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -306,62 +306,6 @@ scene.add(box(34, 7.5, 0.18, mat.wall, 0, 3.45, -8.9));
 scene.add(box(0.22, 7.5, 10.5, mat.wall, -16.9, 3.45, -3.9));
 scene.add(box(0.42, 7.6, 0.42, mat.gray, -16.45, 3.45, -7.35));
 
-// large wall-mounted utility panel
-leftWallDetail.add(box(0.08, 2.4, 2.4, mat.white2, 0, 3.0, 0));
-leftWallDetail.add(box(0.09, 1.55, 1.65, mat.dark, 0.05, 3.0, 0));
-
-// yellow header strip
-leftWallDetail.add(box(0.1, 0.12, 2.25, mat.yellow, 0.08, 4.25, 0));
-
-// vertical pipes
-for (let i = 0; i < 5; i++) {
-  leftWallDetail.add(
-    cyl(
-      0.035,
-      2.5,
-      mat.darkGray,
-      0.12,
-      2.9,
-      -1.0 + i * 0.48
-    )
-  );
-}
-
-// small control boxes
-for (let i = 0; i < 3; i++) {
-  leftWallDetail.add(
-    box(
-      0.12,
-      0.36,
-      0.28,
-      mat.gray,
-      0.16,
-      2.15 + i * 0.55,
-      1.35
-    )
-  );
-
-  leftWallDetail.add(
-    box(
-      0.13,
-      0.08,
-      0.14,
-      i % 2 === 0 ? mat.yellow2 : mat.red,
-      0.22,
-      2.15 + i * 0.55,
-      1.52
-    )
-  );
-}
-
-// warm wall light
-leftWallDetail.add(box(0.12, 0.42, 0.2, mat.gray, 0.12, 4.65, 0));
-leftWallDetail.add(box(0.13, 0.28, 0.12, mat.glow, 0.2, 4.65, 0));
-
-const leftWallLight = new THREE.PointLight("#d89a45", 1.1, 5);
-leftWallLight.position.set(-16.2, 4.5, -1.1);
-scene.add(leftWallLight);
-glowLights.push(leftWallLight);
 
 
 for (let i = 0; i < 18; i++) {
@@ -478,6 +422,122 @@ makeTextPanel(
 addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
+
+/* ---------- TOP LEFT FEATURE ---------- */
+
+const topLeftFeature = new THREE.Group();
+topLeftFeature.position.set(-14.2, 0, -3.2);
+scene.add(topLeftFeature);
+
+// main tower
+topLeftFeature.add(
+  box(2.3, 4.6, 1.2, mat.white2, 0, 2.3, 0)
+);
+
+// yellow trim
+topLeftFeature.add(
+  box(2.45, 0.16, 1.28, mat.yellow, 0, 4.58, 0)
+);
+
+// dark screen
+topLeftFeature.add(
+  box(1.55, 1.05, 0.08, mat.dark, 0, 2.9, 0.66)
+);
+
+// lower cabinet
+topLeftFeature.add(
+  box(1.85, 1.0, 1.0, mat.gray, 0, 0.62, 0)
+);
+
+// catwalk
+topLeftFeature.add(
+  box(3.8, 0.16, 1.1, mat.gray, 0.45, 3.82, 0.12)
+);
+
+topLeftFeature.add(
+  box(3.5, 0.06, 0.06, mat.yellow, 0.45, 4.2, 0.72)
+);
+
+// railing
+for (let i = 0; i < 7; i++) {
+  topLeftFeature.add(
+    box(
+      0.05,
+      0.62,
+      0.05,
+      mat.darkGray,
+      -1.1 + i * 0.55,
+      3.92,
+      0.72
+    )
+  );
+}
+
+// stairs
+for (let i = 0; i < 7; i++) {
+  const step = box(
+    0.85,
+    0.08,
+    0.4,
+    mat.gray,
+    -1.6 + i * 0.18,
+    0.72 + i * 0.28,
+    0.55
+  );
+
+  step.rotation.z = -0.52;
+  topLeftFeature.add(step);
+}
+
+// angled rail
+const stairRail = box(
+  2.2,
+  0.05,
+  0.05,
+  mat.yellow,
+  -0.92,
+  2.0,
+  0.82
+);
+
+stairRail.rotation.z = -0.52;
+topLeftFeature.add(stairRail);
+
+// support beams
+for (let i = 0; i < 4; i++) {
+  topLeftFeature.add(
+    box(
+      0.08,
+      2.8,
+      0.08,
+      mat.darkGray,
+      -1.4 + (i % 2) * 2.8,
+      1.4,
+      -0.25 + Math.floor(i / 2) * 1.0
+    )
+  );
+}
+
+// warning lights
+topLeftFeature.add(
+  box(0.22, 0.18, 0.1, mat.red, -0.62, 1.55, 0.68)
+);
+
+topLeftFeature.add(
+  box(0.22, 0.18, 0.1, mat.yellow2, -0.28, 1.55, 0.68)
+);
+
+// warm light
+const topLeftLight = new THREE.PointLight(
+  "#d89a45",
+  1.2,
+  5
+);
+
+topLeftLight.position.set(-14.2, 4.1, -2.2);
+
+scene.add(topLeftLight);
+glowLights.push(topLeftLight);
 
 /* ---------- GUARANTEED VISIBLE TOP LEFT FEATURE ---------- */
 
