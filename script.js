@@ -393,82 +393,111 @@ function aperturePerson(x, z, scale = 1) {
 
   const bodyMat = new THREE.MeshStandardMaterial({
     color: "#e9a84a",
-    roughness: 0.45,
-    metalness: 0.05
+    roughness: 0.32,
+    metalness: 0.03
   });
 
   const faceMat = new THREE.MeshBasicMaterial({
-    color: "#2b1b10"
+    color: "#24160c"
   });
 
   const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.26 * scale, 32, 32),
+    new THREE.SphereGeometry(0.34 * scale, 48, 48),
     bodyMat
   );
-
-  head.position.set(0, 1.25 * scale, 0);
+  head.position.set(0, 1.2 * scale, 0);
+  head.scale.set(1, 0.96, 1);
+  head.castShadow = true;
   g.add(head);
 
   const torso = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.22 * scale, 0.45 * scale, 10, 24),
+    new THREE.CapsuleGeometry(0.28 * scale, 0.62 * scale, 20, 40),
     bodyMat
   );
-
-  torso.position.set(0, 0.72 * scale, 0);
+  torso.position.set(0, 0.56 * scale, 0);
+  torso.scale.set(1.05, 1, 0.92);
+  torso.castShadow = true;
   g.add(torso);
 
+  const neckBlend = new THREE.Mesh(
+    new THREE.SphereGeometry(0.24 * scale, 32, 32),
+    bodyMat
+  );
+  neckBlend.position.set(0, 0.86 * scale, 0);
+  neckBlend.scale.set(1, 0.55, 0.9);
+  neckBlend.castShadow = true;
+  g.add(neckBlend);
+
   const eyeL = new THREE.Mesh(
-    new THREE.SphereGeometry(0.025 * scale, 12, 12),
+    new THREE.SphereGeometry(0.027 * scale, 16, 16),
     faceMat
   );
-
-  eyeL.position.set(-0.08 * scale, 1.29 * scale, 0.245 * scale);
+  eyeL.position.set(-0.105 * scale, 1.24 * scale, 0.325 * scale);
   g.add(eyeL);
 
   const eyeR = eyeL.clone();
-  eyeR.position.x = 0.08 * scale;
+  eyeR.position.x = 0.105 * scale;
   g.add(eyeR);
 
   const mouth = box(
-    0.11 * scale,
+    0.12 * scale,
     0.018 * scale,
     0.018 * scale,
     faceMat,
     0,
-    1.17 * scale,
-    0.25 * scale
+    1.09 * scale,
+    0.33 * scale
   );
-
-  mouth.rotation.z = 0.08;
+  mouth.rotation.z = 0.05;
   g.add(mouth);
 
   const armL = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.055 * scale, 0.45 * scale, 8, 16),
+    new THREE.CapsuleGeometry(0.075 * scale, 0.42 * scale, 16, 28),
     bodyMat
   );
-
-  armL.position.set(-0.27 * scale, 0.75 * scale, 0);
-  armL.rotation.z = -0.35;
+  armL.position.set(-0.31 * scale, 0.6 * scale, 0.02 * scale);
+  armL.rotation.z = -0.18;
+  armL.castShadow = true;
   g.add(armL);
 
   const armR = armL.clone();
-  armR.position.x = 0.27 * scale;
-  armR.rotation.z = 0.35;
+  armR.position.x = 0.31 * scale;
+  armR.rotation.z = 0.18;
   g.add(armR);
 
-  const legL = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.065 * scale, 0.45 * scale, 8, 16),
+  const shoulderL = new THREE.Mesh(
+    new THREE.SphereGeometry(0.09 * scale, 24, 24),
     bodyMat
   );
+  shoulderL.position.set(-0.25 * scale, 0.78 * scale, 0);
+  shoulderL.scale.set(1, 0.75, 1);
+  g.add(shoulderL);
 
-  legL.position.set(-0.09 * scale, 0.18 * scale, 0);
-  legL.rotation.z = 0.08;
+  const shoulderR = shoulderL.clone();
+  shoulderR.position.x = 0.25 * scale;
+  g.add(shoulderR);
+
+  const legL = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.085 * scale, 0.38 * scale, 16, 28),
+    bodyMat
+  );
+  legL.position.set(-0.105 * scale, 0.11 * scale, 0);
+  legL.rotation.z = 0.04;
+  legL.castShadow = true;
   g.add(legL);
 
   const legR = legL.clone();
-  legR.position.x = 0.09 * scale;
-  legR.rotation.z = -0.08;
+  legR.position.x = 0.105 * scale;
+  legR.rotation.z = -0.04;
   g.add(legR);
+
+  const hipBlend = new THREE.Mesh(
+    new THREE.SphereGeometry(0.22 * scale, 32, 32),
+    bodyMat
+  );
+  hipBlend.position.set(0, 0.34 * scale, 0);
+  hipBlend.scale.set(1.1, 0.55, 0.9);
+  g.add(hipBlend);
 
   return g;
 }
@@ -1005,7 +1034,7 @@ let dragPoint = new THREE.Vector3();
 
 // forklift group
 const forklift = new THREE.Group();
-forklift.position.set(2.2, 0, 4.85);
+forklift.position.set(-3.6, 0, 4.75);
 forklift.rotation.y = -0.65;
 forklift.scale.set(1.15, 1.15, 1.15);
 scene.add(forklift);
@@ -1065,7 +1094,7 @@ driver.add(box(0.24, 0.38, 0.08, mat.black, 0, 0.2, 0));
 
 // pallet on forks
 const pallet = new THREE.Group();
-pallet.position.set(0.65, 0.48, 4.1);
+pallet.position.set(-1.85, 0.48, 4.0);
 pallet.rotation.y = -0.65;
 pallet.scale.set(1.15, 1.15, 1.15);
 scene.add(pallet);
@@ -1097,9 +1126,9 @@ for (let i = 0; i < 12; i++) {
   crate.add(seam);
 
 crate.position.set(
-  0.65 + bx,
+  -1.85 + bx,
   pallet.position.y + by,
-  4.1 + bz
+  4.0 + bz
 );
 
   crate.rotation.y = pallet.rotation.y;
