@@ -1,374 +1,345 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-import { OrbitControls }
-from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-
-
-// SCENE
 const scene = new THREE.Scene();
+scene.background = new THREE.Color("#171717");
+scene.fog = new THREE.Fog("#171717", 12, 30);
 
-scene.background = new THREE.Color("#030712");
-
-scene.fog = new THREE.Fog(
-  "#030712",
-  5,
-  18
-);
-
-
-// CAMERA
 const camera = new THREE.PerspectiveCamera(
-  55,
+  45,
   window.innerWidth / window.innerHeight,
   0.1,
   100
 );
 
-camera.position.set(0, 2.2, 7);
+// 2.5D side/isometric angle
+camera.position.set(8, 5, 12);
+camera.lookAt(0, 1.5, 0);
 
-
-// RENDERER
 const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
-
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio, 2)
-);
-
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 document.body.appendChild(renderer.domElement);
 
+// COLORS
+const orange = "#c96f2d";
+const darkOrange = "#8f421f";
+const gray = "#4a4a4a";
+const darkGray = "#242424";
+const lightGray = "#777777";
+const glowOrange = "#ff8b3d";
 
-// CONTROLS
-const controls = new OrbitControls(
-  camera,
-  renderer.domElement
-);
-
-controls.enableDamping = true;
-
-controls.dampingFactor = 0.08;
-
-controls.minDistance = 4;
-
-controls.maxDistance = 10;
-
-controls.maxPolarAngle = Math.PI / 2.05;
-
-controls.target.set(0, 1.4, 0);
-
-
-// MATERIALS
-const wallMat = new THREE.MeshStandardMaterial({
-  color: "#07152d",
-  roughness: 0.65,
-  metalness: 0.08
-});
-
-const floorMat = new THREE.MeshStandardMaterial({
-  color: "#050b18",
-  roughness: 0.9,
-  metalness: 0.1
-});
-
-const glowMat = new THREE.MeshBasicMaterial({
-  color: "#5bc7ff"
-});
-
-
-// ROOM SIZE
-const roomWidth = 8;
-const roomHeight = 4.5;
-const roomDepth = 8;
-
-
-// FLOOR
-const floor = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    roomWidth,
-    0.12,
-    roomDepth
-  ),
-  floorMat
-);
-
-floor.position.set(0, -0.06, 0);
-
-floor.receiveShadow = true;
-
-scene.add(floor);
-
-
-// BACK WALL
-const backWall = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    roomWidth,
-    roomHeight,
-    0.12
-  ),
-  wallMat
-);
-
-backWall.position.set(
-  0,
-  roomHeight / 2,
-  -roomDepth / 2
-);
-
-scene.add(backWall);
-
-
-// LEFT WALL
-const leftWall = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    0.12,
-    roomHeight,
-    roomDepth
-  ),
-  wallMat
-);
-
-leftWall.position.set(
-  -roomWidth / 2,
-  roomHeight / 2,
-  0
-);
-
-scene.add(leftWall);
-
-
-// RIGHT WALL
-const rightWall = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    0.12,
-    roomHeight,
-    roomDepth
-  ),
-  wallMat
-);
-
-rightWall.position.set(
-  roomWidth / 2,
-  roomHeight / 2,
-  0
-);
-
-scene.add(rightWall);
-
-
-// CEILING
-const ceiling = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    roomWidth,
-    0.12,
-    roomDepth
-  ),
-  wallMat
-);
-
-ceiling.position.set(
-  0,
-  roomHeight,
-  0
-);
-
-scene.add(ceiling);
-
-
-// LIGHT BAR
-const lightBar = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    2.6,
-    0.08,
-    0.08
-  ),
-  glowMat
-);
-
-lightBar.position.set(
-  0,
-  3.3,
-  -3.93
-);
-
-scene.add(lightBar);
-
-
-// NEON LIGHT
-const neonLight = new THREE.PointLight(
-  "#5bc7ff",
-  6,
-  9
-);
-
-neonLight.position.set(
-  0,
-  3.1,
-  -3.2
-);
-
-neonLight.castShadow = true;
-
-scene.add(neonLight);
-
-
-// AMBIENT LIGHT
-const ambient = new THREE.AmbientLight(
-  "#1f6fff",
-  0.35
-);
-
+// LIGHTS
+const ambient = new THREE.AmbientLight("#ffffff", 0.45);
 scene.add(ambient);
 
+const mainLight = new THREE.DirectionalLight("#ffd1a3", 2.1);
+mainLight.position.set(4, 8, 6);
+mainLight.castShadow = true;
+scene.add(mainLight);
 
-// PANEL
-const panel = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    2.3,
-    1.2,
-    0.08
-  ),
+const orangeLight = new THREE.PointLight(glowOrange, 3, 12);
+orangeLight.position.set(-3, 3.5, 2);
+scene.add(orangeLight);
 
-  new THREE.MeshStandardMaterial({
-    color: "#0b2448",
-
-    emissive: "#123d70",
-
-    emissiveIntensity: 0.45,
-
-    roughness: 0.35,
-
-    metalness: 0.3
-  })
-);
-
-panel.position.set(
-  0,
-  1.8,
-  -3.88
-);
-
-scene.add(panel);
-
-
-// DESK
-const desk = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    2.6,
-    0.35,
-    1
-  ),
-
-  new THREE.MeshStandardMaterial({
-    color: "#07101f",
-
-    roughness: 0.5,
-
-    metalness: 0.25
-  })
-);
-
-desk.position.set(
-  0,
-  0.65,
-  -2.6
-);
-
-desk.castShadow = true;
-
-desk.receiveShadow = true;
-
-scene.add(desk);
-
-
-// GRID
-const grid = new THREE.GridHelper(
-  8,
-  16,
-  "#164d78",
-  "#0b2745"
-);
-
-grid.position.y = 0.01;
-
-scene.add(grid);
-
-
-// PARTICLES
-const particleGeo = new THREE.BufferGeometry();
-
-const particleCount = 160;
-
-const positions = [];
-
-for (let i = 0; i < particleCount; i++) {
-
-  positions.push(
-    (Math.random() - 0.5) * 7,
-    Math.random() * 4,
-    (Math.random() - 0.5) * 7
-  );
-}
-
-particleGeo.setAttribute(
-  "position",
-
-  new THREE.Float32BufferAttribute(
-    positions,
-    3
-  )
-);
-
-const particleMat = new THREE.PointsMaterial({
-  color: "#8bdcff",
-
-  size: 0.035,
-
-  transparent: true,
-
-  opacity: 0.65
+// MATERIALS
+const matFloor = new THREE.MeshStandardMaterial({
+  color: "#2b2b2b",
+  roughness: 0.8
 });
 
-const particles = new THREE.Points(
-  particleGeo,
-  particleMat
+const matWall = new THREE.MeshStandardMaterial({
+  color: "#333333",
+  roughness: 0.7
+});
+
+const matOrange = new THREE.MeshStandardMaterial({
+  color: orange,
+  roughness: 0.45,
+  metalness: 0.2
+});
+
+const matDarkOrange = new THREE.MeshStandardMaterial({
+  color: darkOrange,
+  roughness: 0.5,
+  metalness: 0.15
+});
+
+const matGray = new THREE.MeshStandardMaterial({
+  color: gray,
+  roughness: 0.4,
+  metalness: 0.35
+});
+
+const matDarkGray = new THREE.MeshStandardMaterial({
+  color: darkGray,
+  roughness: 0.65,
+  metalness: 0.25
+});
+
+const matGlow = new THREE.MeshBasicMaterial({
+  color: glowOrange
+});
+
+// ROOM
+const floor = new THREE.Mesh(
+  new THREE.BoxGeometry(18, 0.25, 7),
+  matFloor
 );
+floor.position.set(0, -0.15, 0);
+floor.receiveShadow = true;
+scene.add(floor);
 
-scene.add(particles);
+const backWall = new THREE.Mesh(
+  new THREE.BoxGeometry(18, 5, 0.25),
+  matWall
+);
+backWall.position.set(0, 2.35, -3.6);
+backWall.receiveShadow = true;
+scene.add(backWall);
 
+const sideWall = new THREE.Mesh(
+  new THREE.BoxGeometry(0.25, 5, 7),
+  matWall
+);
+sideWall.position.set(-9, 2.35, 0);
+scene.add(sideWall);
 
-// ANIMATION
+// WALL PIPES
+for (let i = 0; i < 5; i++) {
+  const pipe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.045, 17, 16),
+    matDarkGray
+  );
+
+  pipe.rotation.z = Math.PI / 2;
+  pipe.position.set(0, 3.8 - i * 0.45, -3.42);
+  scene.add(pipe);
+}
+
+// CONVEYOR BELT
+const beltBase = new THREE.Mesh(
+  new THREE.BoxGeometry(14.5, 0.35, 1.1),
+  matDarkGray
+);
+beltBase.position.set(0, 0.55, 0);
+beltBase.castShadow = true;
+beltBase.receiveShadow = true;
+scene.add(beltBase);
+
+const beltTop = new THREE.Mesh(
+  new THREE.BoxGeometry(14.4, 0.08, 1),
+  new THREE.MeshStandardMaterial({
+    color: "#111111",
+    roughness: 0.5,
+    metalness: 0.4
+  })
+);
+beltTop.position.set(0, 0.78, 0);
+scene.add(beltTop);
+
+// Conveyor rollers
+const rollers = [];
+
+for (let i = 0; i < 16; i++) {
+  const roller = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.13, 0.13, 1.2, 24),
+    matGray
+  );
+
+  roller.rotation.x = Math.PI / 2;
+  roller.position.set(-6.8 + i * 0.9, 0.8, 0);
+  roller.castShadow = true;
+
+  rollers.push(roller);
+  scene.add(roller);
+}
+
+// MOVING BOXES
+const boxes = [];
+
+for (let i = 0; i < 6; i++) {
+  const box = new THREE.Mesh(
+    new THREE.BoxGeometry(0.55, 0.45, 0.55),
+    matOrange
+  );
+
+  box.position.set(-7 + i * 2.6, 1.13, 0);
+  box.castShadow = true;
+
+  boxes.push(box);
+  scene.add(box);
+}
+
+// MACHINE HELPERS
+function createMachine(x, type) {
+  const group = new THREE.Group();
+  group.position.x = x;
+
+  const base = new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 1.2, 1.45),
+    matGray
+  );
+  base.position.y = 1.35;
+  base.castShadow = true;
+  group.add(base);
+
+  const top = new THREE.Mesh(
+    new THREE.BoxGeometry(1.9, 0.35, 1.6),
+    matDarkOrange
+  );
+  top.position.y = 2.15;
+  top.castShadow = true;
+  group.add(top);
+
+  const screen = new THREE.Mesh(
+    new THREE.BoxGeometry(0.7, 0.38, 0.04),
+    matGlow
+  );
+  screen.position.set(0, 1.55, 0.75);
+  group.add(screen);
+
+  const arm = new THREE.Mesh(
+    new THREE.BoxGeometry(0.25, 1, 0.25),
+    matDarkGray
+  );
+  arm.position.y = 2.65;
+  arm.castShadow = true;
+  group.add(arm);
+
+  let tool;
+
+  if (type === "smash") {
+    tool = new THREE.Mesh(
+      new THREE.BoxGeometry(0.95, 0.25, 0.95),
+      matOrange
+    );
+    tool.position.y = 2.05;
+  }
+
+  if (type === "scan") {
+    tool = new THREE.Mesh(
+      new THREE.BoxGeometry(1.15, 0.12, 1.15),
+      matGlow
+    );
+    tool.position.y = 2.05;
+  }
+
+  if (type === "side") {
+    tool = new THREE.Mesh(
+      new THREE.BoxGeometry(0.35, 0.35, 1.5),
+      matOrange
+    );
+    tool.position.set(0, 1.45, 0);
+  }
+
+  group.add(tool);
+
+  scene.add(group);
+
+  return {
+    group,
+    arm,
+    tool,
+    type,
+    baseY: tool.position.y
+  };
+}
+
+const machines = [
+  createMachine(-5.2, "smash"),
+  createMachine(-1.7, "scan"),
+  createMachine(1.8, "side"),
+  createMachine(5.2, "smash")
+];
+
+// BACKGROUND DETAILS
+for (let i = 0; i < 9; i++) {
+  const column = new THREE.Mesh(
+    new THREE.BoxGeometry(0.18, 4.4, 0.18),
+    matDarkGray
+  );
+
+  column.position.set(-8 + i * 2, 2.1, -3.2);
+  scene.add(column);
+}
+
+for (let i = 0; i < 5; i++) {
+  const light = new THREE.Mesh(
+    new THREE.BoxGeometry(1.1, 0.08, 0.08),
+    matGlow
+  );
+
+  light.position.set(-6 + i * 3, 4.45, -2.7);
+  scene.add(light);
+}
+
+// CAMERA DRIFT FOR SCREENSAVER FEEL
+let time = 0;
+
 function animate() {
-
   requestAnimationFrame(animate);
 
-  controls.update();
+  time += 0.016;
 
-  particles.rotation.y += 0.0008;
+  // rollers spin
+  rollers.forEach((roller) => {
+    roller.rotation.z -= 0.08;
+  });
+
+  // boxes move along belt
+  boxes.forEach((box, i) => {
+    box.position.x += 0.025;
+
+    if (box.position.x > 7.4) {
+      box.position.x = -7.4;
+    }
+
+    box.rotation.y += 0.01;
+  });
+
+  // machines animate differently
+  machines.forEach((machine, i) => {
+    const delay = i * 0.8;
+
+    if (machine.type === "smash") {
+      const motion = Math.abs(Math.sin(time * 2.2 + delay));
+      machine.tool.position.y = 2.35 - motion * 0.8;
+      machine.arm.scale.y = 1 + motion * 0.35;
+    }
+
+    if (machine.type === "scan") {
+      machine.tool.position.y = 2.05 + Math.sin(time * 3 + delay) * 0.08;
+      machine.tool.scale.x = 1 + Math.sin(time * 5) * 0.12;
+      machine.tool.scale.z = 1 + Math.sin(time * 5) * 0.12;
+    }
+
+    if (machine.type === "side") {
+      machine.tool.position.z = Math.sin(time * 2.5 + delay) * 0.65;
+    }
+  });
+
+  // glowing pulse
+  orangeLight.intensity = 2.5 + Math.sin(time * 2) * 0.6;
+
+  // slow screensaver camera movement
+  camera.position.x = 8 + Math.sin(time * 0.25) * 0.8;
+  camera.position.y = 5 + Math.sin(time * 0.18) * 0.3;
+  camera.lookAt(0, 1.5, 0);
 
   renderer.render(scene, camera);
 }
 
 animate();
 
-
-// RESIZE
 window.addEventListener("resize", () => {
-
-  camera.aspect =
-    window.innerWidth / window.innerHeight;
-
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
-  renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-  );
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
