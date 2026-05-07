@@ -417,6 +417,47 @@ addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
 
+/* ---------- TOP LEFT DETAIL AREA ---------- */
+
+const topLeftDetail = new THREE.Group();
+topLeftDetail.position.set(-13.2, 0, -5.6);
+scene.add(topLeftDetail);
+
+// back display board
+topLeftDetail.add(box(3.2, 1.8, 0.12, mat.white2, 0, 2.4, 0));
+topLeftDetail.add(box(2.6, 1.1, 0.08, mat.dark, 0, 2.42, 0.08));
+
+// stacked storage shelf
+topLeftDetail.add(box(3.4, 0.18, 1.2, mat.gray, 0, 0.75, 0.45));
+topLeftDetail.add(box(3.4, 0.14, 1.2, mat.gray, 0, 1.35, 0.45));
+topLeftDetail.add(box(3.4, 0.14, 1.2, mat.gray, 0, 1.95, 0.45));
+
+for (let i = 0; i < 4; i++) {
+  topLeftDetail.add(box(0.12, 1.4, 0.12, mat.darkGray, -1.5 + i, 1.35, 0.45));
+}
+
+// boxes on shelf
+for (let i = 0; i < 8; i++) {
+  topLeftDetail.add(
+    box(
+      0.42,
+      0.32,
+      0.42,
+      i % 2 === 0 ? mat.yellow : mat.white2,
+      -1.25 + (i % 4) * 0.8,
+      1.02 + Math.floor(i / 4) * 0.6,
+      0.45
+    )
+  );
+}
+
+// warm light
+const topLeftLight = new THREE.PointLight("#e0a64a", 1.2, 5);
+topLeftLight.position.set(-13.2, 3.1, -5.1);
+scene.add(topLeftLight);
+
+topLeftDetail.add(box(0.55, 0.12, 0.12, mat.yellow2, 0, 3.2, 0.2));
+
 /* ---------- CONVEYORS ---------- */
 
 const rollers = [];
