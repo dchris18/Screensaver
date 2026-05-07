@@ -302,6 +302,11 @@ for (let xi = 0; xi < 18; xi++) {
 
 scene.add(box(34, 7.5, 0.18, mat.wall, 0, 3.45, -8.9));
 
+// LEFT SIDE WALL - fixes the empty white top-left area
+scene.add(box(0.22, 7.5, 10.5, mat.wall, -16.9, 3.45, -3.9));
+scene.add(box(0.42, 7.6, 0.42, mat.gray, -16.45, 3.45, -7.35));
+
+
 for (let i = 0; i < 18; i++) {
   scene.add(
     box(
@@ -420,11 +425,11 @@ addLamp(-12.8, 4.25, -5.8, 1.4);
 /* ---------- TOP LEFT INDUSTRIAL STAIR / CATWALK ---------- */
 
 const stairTower = new THREE.Group();
-stairTower.position.set(-14.2, 0, -4.95);
+stairTower.position.set(-10.9, 0, -2.65);
 scene.add(stairTower);
 
 // back support wall panel
-stairTower.add(box(3.8, 3.2, 0.12, mat.wall2, 0, 2.25, -0.35));
+stairTower.add(box(4.4, 3.4, 0.14, mat.white2, 0, 2.25, -0.35));
 
 // upper platform
 stairTower.add(box(3.5, 0.18, 1.25, mat.gray, 0.1, 2.55, 0.25));
@@ -803,40 +808,6 @@ for (let i = 0; i < 5; i++) {
   g.add(box(0.35, 0.55, 0.35, mat.gray, 0.65, 2.35, 0));
 }
 
-/* ---------- STORAGE / PLANTS ---------- */
-
-const storageArea = new THREE.Group();
-
-storageArea.position.set(-11.8, 0, -2.2);
-scene.add(storageArea);
-
-for (let i = 0; i < 10; i++) {
-  storageArea.add(
-    box(
-      2.1,
-      0.08,
-      1.25,
-      mat.white2,
-      0.08 * i,
-      0.15 + i * 0.08,
-      0
-    )
-  );
-}
-
-storageArea.add(box(2.4, 0.16, 1.3, mat.white, 1.8, 0.78, 0.2));
-storageArea.add(box(0.12, 0.8, 0.12, mat.gray, 0.75, 0.35, -0.35));
-storageArea.add(box(0.12, 0.8, 0.12, mat.gray, 2.85, 0.35, -0.35));
-storageArea.add(box(0.12, 0.8, 0.12, mat.gray, 0.75, 0.35, 0.75));
-storageArea.add(box(0.12, 0.8, 0.12, mat.gray, 2.85, 0.35, 0.75));
-storageArea.add(box(3.2, 0.08, 0.08, mat.yellow, 1.2, 2.4, 0));
-storageArea.add(box(0.08, 1.5, 0.08, mat.gray, -0.3, 1.65, 0));
-storageArea.add(box(0.08, 1.5, 0.08, mat.gray, 2.7, 1.65, 0));
-
-const hangingPanel = box(1.1, 0.06, 0.85, mat.yellow2, 1.2, 1.72, 0);
-
-hangingPanel.rotation.z = -0.25;
-storageArea.add(hangingPanel);
 
 /* ---------- PROPS ---------- */
 
