@@ -732,6 +732,73 @@ claw.add(box(0.08, 0.4, 0.08, mat.dark, 0.08, 0, 0));
 picker.userData.lowerArm = lowerArm;
 picker.userData.upperGroup = upperGroup;
 picker.userData.claw = claw;
+
+// FORKLIFT WITH PALLET
+const draggableBoxes = [];
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+let selectedBox = null;
+let dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.02);
+let dragPoint = new THREE.Vector3();
+
+const forklift = new THREE.Group();
+forklift.position.set(9.5, 0, 4.4);
+forklift.rotation.y = -0.35;
+scene.add(forklift);
+
+// forklift body
+forklift.add(box(1.35, 0.65, 0.9, mat.yellow, 0, 0.55, 0));
+forklift.add(box(0.65, 1.05, 0.75, mat.yellow2, -0.25, 1.15, 0));
+forklift.add(box(0.45, 0.55, 0.08, mat.dark, -0.25, 1.25, 0.42));
+
+// wheels
+forklift.add(cyl(0.23, 0.18, mat.dark, -0.5, 0.2, -0.48, Math.PI / 2));
+forklift.add(cyl(0.23, 0.18, mat.dark, 0.55, 0.2, -0.48, Math.PI / 2));
+forklift.add(cyl(0.23, 0.18, mat.dark, -0.5, 0.2, 0.48, Math.PI / 2));
+forklift.add(cyl(0.23, 0.18, mat.dark, 0.55, 0.2, 0.48, Math.PI / 2));
+
+// mast
+forklift.add(box(0.1, 1.75, 0.1, mat.darkGray, 0.82, 1.0, -0.42));
+forklift.add(box(0.1, 1.75, 0.1, mat.darkGray, 0.82, 1.0, 0.42));
+
+// forks
+forklift.add(box(1.45, 0.06, 0.08, mat.darkGray, 1.35, 0.42, -0.25));
+forklift.add(box(1.45, 0.06, 0.08, mat.darkGray, 1.35, 0.42, 0.25));
+
+// pallet
+const pallet = new THREE.Group();
+pallet.position.set(11.1, 0.45, 4.1);
+scene.add(pallet);
+
+pallet.add(box(1.5, 0.12, 1.15, mat.darkGray, 0, 0, 0));
+pallet.add(box(1.45, 0.05, 0.12, mat.gray, 0, 0.12, -0.45));
+pallet.add(box(1.45, 0.05, 0.12, mat.gray, 0, 0.12, 0));
+pallet.add(box(1.45, 0.05, 0.12, mat.gray, 0, 0.12, 0.45));
+
+// draggable pallet boxes
+for (let i = 0; i < 6; i++) {
+  const bx = -0.45 + (i % 3) * 0.45;
+  const by = 0.42 + Math.floor(i / 3) * 0.36;
+  const bz = i < 3 ? -0.22 : 0.22;
+
+  const crate = new THREE.Group();
+
+  const body = box(0.36, 0.3, 0.36, mat.yellow);
+  const top = box(0.26, 0.04, 0.26, mat.yellow2, 0, 0.17, 0);
+
+  crate.add(body);
+  crate.add(top);
+
+  crate.position.set(11.1 + bx, by, 4.1 + bz);
+  crate.userData.draggable = true;
+  crate.userData.onConveyor = false;
+  crate.userData.speed = 0.022;
+
+  scene.add(crate);
+  draggableBoxes.push(crate);
+}
+
 // PACKAGES
 const packages = [];
 
@@ -878,9 +945,16 @@ function animate() {
   packages.forEach((p) => {
     p.position.x += p.userData.speed;
 
-    if (p.position.x > 9.4) {
-      resetPackage(p);
-    }
+if (p.position.x > 9.4) {
+  if (draggableBoxes.includes(p)) {
+    p.position.x = -9.8;
+    p.position.z = 0;
+    p.position.y = 1.02;
+    p.userData.onConveyor = true;
+  } else {
+    resetPackage(p);
+  }
+}
 
     animatePackageStages(p);
 
@@ -921,7 +995,7 @@ picker.userData.upperGroup.rotation.z =
 
 picker.userData.claw.position.y =
   1.02 + Math.sin(time * 2.2) * 0.08;
-  
+
   camera.position.x =
     8 + Math.sin(time * 0.08) * 0.25;
 
@@ -934,6 +1008,70 @@ picker.userData.claw.position.y =
 
   renderer.render(scene, camera);
 }
+function getMouse(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
+
+window.addEventListener("pointerdown", (event) => {
+  getMouse(event);
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const hits = raycaster.intersectObjects(draggableBoxes, true);
+
+  if (hits.length > 0) {
+    let obj = hits[0].object;
+
+    while (obj.parent && !obj.userData.draggable) {
+      obj = obj.parent;
+    }
+
+    selectedBox = obj;
+    selectedBox.userData.onConveyor = false;
+
+    document.body.style.cursor = "grabbing";
+  }
+});
+
+window.addEventListener("pointermove", (event) => {
+  if (!selectedBox) return;
+
+  getMouse(event);
+
+  raycaster.setFromCamera(mouse, camera);
+
+  if (raycaster.ray.intersectPlane(dragPlane, dragPoint)) {
+    selectedBox.position.x = dragPoint.x;
+    selectedBox.position.z = dragPoint.z;
+    selectedBox.position.y = 1.15;
+  }
+});
+
+window.addEventListener("pointerup", () => {
+  if (!selectedBox) return;
+
+  // conveyor drop zone
+  const onMainConveyor =
+    selectedBox.position.x > -9.8 &&
+    selectedBox.position.x < 9.4 &&
+    selectedBox.position.z > -0.9 &&
+    selectedBox.position.z < 0.9;
+
+  if (onMainConveyor) {
+    selectedBox.position.y = 1.02;
+    selectedBox.position.z = 0;
+    selectedBox.userData.onConveyor = true;
+    selectedBox.userData.stage = 0;
+
+    packages.push(selectedBox);
+  } else {
+    selectedBox.position.y = 1.15;
+  }
+
+  selectedBox = null;
+  document.body.style.cursor = "default";
+});
 
 animate();
 
