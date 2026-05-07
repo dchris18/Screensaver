@@ -34,8 +34,8 @@ document.body.appendChild(renderer.domElement);
 
 const C = {
   floor: "#cdbda7",
-  tileA: "#dfd1bd",
-  tileB: "#bba98f",
+tileA: "#c9b899",
+tileB: "#8f8f86",
 
   wall: "#d8c4aa",
   wall2: "#ead8bf",
@@ -274,15 +274,21 @@ function addLamp(x, y, z, power = 0.65) {
 
 /* ---------- FLOOR ---------- */
 
-for (let x = -17; x <= 17; x += 2) {
-  for (let z = -10; z <= 10; z += 2) {
-    const isLight = ((x + z) / 2) % 2 === 0;
+scene.add(
+  box(34, 0.18, 21, mat.floor, 0, -0.1, 0)
+);
+
+for (let xi = 0; xi < 18; xi++) {
+  for (let zi = 0; zi < 11; zi++) {
+    const x = -17 + xi * 2;
+    const z = -10 + zi * 2;
+    const isLight = (xi + zi) % 2 === 0;
 
     scene.add(
       box(
-        1.96,
+        1.94,
         0.014,
-        1.96,
+        1.94,
         isLight ? mat.tileA : mat.tileB,
         x,
         0.018,
@@ -823,18 +829,58 @@ const hangingPanel = box(1.1, 0.06, 0.85, mat.yellow2, 1.2, 1.72, 0);
 hangingPanel.rotation.z = -0.25;
 storageArea.add(hangingPanel);
 
-createPlant(-12.4, 2.1, 1.15);
-createPlant(-9.7, -2.8, 0.9);
-createPlant(-6.5, -4.2, 0.9);
-createPlant(1.4, -3.4, 1.1);
-createPlant(4.7, -3.2, 1.0);
-createPlant(7.5, -4.4, 0.9);
-createPlant(9.9, 2.6, 1.05);
+// TOP LEFT INDUSTRIAL STORAGE WALL
+const topLeftDetail = new THREE.Group();
+topLeftDetail.position.set(-13.4, 0, -3.8);
+scene.add(topLeftDetail);
 
-createVines(-8.2, -7.1, 7);
-createVines(1.5, -7.1, 8);
-createVines(8.7, -7.1, 7);
+// low storage platform
+topLeftDetail.add(box(3.4, 0.28, 1.4, mat.gray, 0, 0.14, 0));
+topLeftDetail.add(box(3.1, 0.12, 1.2, mat.darkGray, 0, 0.38, 0));
 
+// stacked panels/crates
+for (let i = 0; i < 7; i++) {
+  topLeftDetail.add(
+    box(
+      1.7,
+      0.08,
+      1.0,
+      i % 2 === 0 ? mat.white2 : mat.gray,
+      -0.3 + i * 0.08,
+      0.55 + i * 0.09,
+      0
+    )
+  );
+}
+
+// wall pipes
+for (let i = 0; i < 4; i++) {
+  topLeftDetail.add(
+    cyl(
+      0.035,
+      3.2,
+      mat.darkGray,
+      -1.5 + i * 0.45,
+      2.15,
+      -0.55,
+      0,
+      Math.PI / 2
+    )
+  );
+}
+
+// warning stripe rail
+topLeftDetail.add(box(3.4, 0.08, 0.08, mat.yellow, 0, 1.55, 0.68));
+topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, -1.55, 1.05, 0.68));
+topLeftDetail.add(box(0.08, 1.1, 0.08, mat.gray, 1.55, 1.05, 0.68));
+
+// small lamp
+topLeftDetail.add(box(0.28, 0.35, 0.18, mat.gray, -1.3, 2.7, 0.62));
+topLeftDetail.add(box(0.12, 0.26, 0.08, mat.glow, -1.3, 2.7, 0.72));
+
+const topLeftLight = new THREE.PointLight("#e0a64a", 0.55, 4);
+topLeftLight.position.set(-14.7, 2.7, -3.0);
+scene.add(topLeftLight);
 /* ---------- PROPS ---------- */
 
 for (let i = 0; i < 8; i++) {
@@ -1228,10 +1274,12 @@ window.addEventListener("pointerup", () => {
     if (!packages.includes(selectedBox)) {
       packages.push(selectedBox);
     }
-  } else {
-    selectedBox.position.y = 0.88;
-    selectedBox.userData.onConveyor = false;
-  }
+} else {
+  selectedBox.position.y = 0.52;
+  selectedBox.rotation.x = 0;
+  selectedBox.rotation.z = 0;
+  selectedBox.userData.onConveyor = false;
+}
 
   selectedBox = null;
   document.body.style.cursor = "default";
@@ -1277,18 +1325,47 @@ packages.forEach((p) => {
 
   p.position.x += p.userData.speed;
 
-  if (p.position.x > 8.6) {
-    if (draggableBoxes.includes(p)) {
-      p.position.x = -9.4;
-      p.position.z = 0;
-      p.position.y = 1.02;
-      p.rotation.set(0, 0, 0);
-      p.userData.stage = 0;
-      p.userData.onConveyor = true;
-    } else {
-      resetPackage(p);
+  // keep every moving package locked to the belt path
+  if (p.position.x <= 5.0) {
+    p.position.z = 0;
+    p.position.y = 1.02;
+  } else {
+    p.position.z = -0.62;
+    p.position.y = 1.13;
+  }
+
+  // reset before it visually falls off the final belt
+  if (p.position.x > 8.25) {
+    p.position.x = -9.4;
+    p.position.z = 0;
+    p.position.y = 1.02;
+    p.rotation.set(0, 0, 0);
+    p.scale.set(1, 1, 1);
+    p.userData.stage = 0;
+    p.userData.scanned = false;
+    p.userData.assembled = false;
+
+    if (p.children[0]) p.children[0].material = mat.yellow;
+    if (p.children[1]) p.children[1].material = mat.yellow2;
+
+    while (p.children.length > 2) {
+      p.remove(p.children[p.children.length - 1]);
     }
   }
+
+  animatePackageStages(p);
+
+  p.position.z = THREE.MathUtils.clamp(p.position.z, -0.65, 0.05);
+
+  if (p.userData.stage === 1) p.rotation.y += 0.003;
+  if (p.userData.stage === 2) p.rotation.y += 0.004;
+  if (p.userData.stage === 3) p.rotation.y += 0.005;
+
+  if (p.userData.stage === 4) {
+    p.rotation.y += 0.003;
+    p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.025;
+  }
+});
 
   animatePackageStages(p);
 
