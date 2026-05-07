@@ -401,144 +401,83 @@ function makeTextPanel(text, x, y, z, w = 2.4, h = 1.2) {
   return panel;
 }
 
-makeTextPanel(
-  "QUALITY\nSAFETY\nEFFICIENCY",
-  -12.3,
-  3.3,
-  -5.95,
-  2.1,
-  1.55
-);
-
-makeTextPanel(
-  "APERTURE\nLABORATORIES",
-  -14.45,
-  2.45,
-  -5.94,
-  2.8,
-  1.2
-);
-
 addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
 
-/* ---------- TOP LEFT FEATURE ---------- */
+/* ---------- CLEAN TOP LEFT CATWALK ---------- */
 
 const topLeftFeature = new THREE.Group();
-topLeftFeature.position.set(-14.2, 0, -3.2);
+topLeftFeature.position.set(-14.25, 0, -3.15);
 scene.add(topLeftFeature);
 
-// main tower
-topLeftFeature.add(
-  box(2.3, 4.6, 1.2, mat.white2, 0, 2.3, 0)
-);
+// tall back structure
+topLeftFeature.add(box(2.55, 4.15, 1.15, mat.white2, 0, 2.08, 0));
+topLeftFeature.add(box(2.7, 0.18, 1.28, mat.yellow, 0, 4.25, 0));
 
-// yellow trim
-topLeftFeature.add(
-  box(2.45, 0.16, 1.28, mat.yellow, 0, 4.58, 0)
-);
+// dark service screen
+topLeftFeature.add(box(1.7, 1.0, 0.08, mat.dark, 0, 2.75, 0.65));
 
-// dark screen
-topLeftFeature.add(
-  box(1.55, 1.05, 0.08, mat.dark, 0, 2.9, 0.66)
-);
+// lower service base
+topLeftFeature.add(box(2.1, 0.8, 1.0, mat.gray, 0, 0.45, 0));
+topLeftFeature.add(box(1.6, 0.45, 0.08, mat.dark, 0, 0.55, 0.55));
 
-// lower cabinet
-topLeftFeature.add(
-  box(1.85, 1.0, 1.0, mat.gray, 0, 0.62, 0)
-);
+// upper balcony platform
+topLeftFeature.add(box(3.8, 0.18, 1.05, mat.gray, 0.55, 3.55, 0.15));
+topLeftFeature.add(box(3.6, 0.08, 0.9, mat.darkGray, 0.55, 3.67, 0.15));
 
-// catwalk
-topLeftFeature.add(
-  box(3.8, 0.16, 1.1, mat.gray, 0.45, 3.82, 0.12)
-);
-
-topLeftFeature.add(
-  box(3.5, 0.06, 0.06, mat.yellow, 0.45, 4.2, 0.72)
-);
-
-// railing
+// balcony posts
 for (let i = 0; i < 7; i++) {
   topLeftFeature.add(
+    box(0.055, 0.6, 0.055, mat.darkGray, -1.0 + i * 0.55, 3.95, 0.68)
+  );
+}
+
+// balcony rail
+topLeftFeature.add(box(3.45, 0.06, 0.06, mat.yellow, 0.55, 4.28, 0.68));
+
+// clean side stair body
+const stairBase = new THREE.Group();
+stairBase.position.set(-1.55, 0.8, 0.65);
+stairBase.rotation.z = -0.42;
+topLeftFeature.add(stairBase);
+
+stairBase.add(box(2.25, 0.08, 0.08, mat.darkGray, 0, 0, -0.24));
+stairBase.add(box(2.25, 0.08, 0.08, mat.darkGray, 0, 0, 0.24));
+
+for (let i = 0; i < 8; i++) {
+  stairBase.add(
     box(
+      0.32,
+      0.07,
+      0.58,
+      mat.gray,
+      -1.0 + i * 0.28,
       0.05,
-      0.62,
-      0.05,
-      mat.darkGray,
-      -1.1 + i * 0.55,
-      3.92,
-      0.72
+      0
     )
   );
 }
 
-// stairs
-for (let i = 0; i < 7; i++) {
-  const step = box(
-    0.85,
-    0.08,
-    0.4,
-    mat.gray,
-    -1.6 + i * 0.18,
-    0.72 + i * 0.28,
-    0.55
-  );
+// stair handrail
+const handRail = box(2.35, 0.055, 0.055, mat.yellow, -0.05, 2.12, 0.92);
+handRail.rotation.z = -0.42;
+topLeftFeature.add(handRail);
 
-  step.rotation.z = -0.52;
-  topLeftFeature.add(step);
-}
+// support legs
+topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, -1.25, 1.6, -0.3));
+topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, 1.75, 1.6, -0.3));
+topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, -1.25, 1.6, 0.6));
+topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, 1.75, 1.6, 0.6));
 
-// angled rail
-const stairRail = box(
-  2.2,
-  0.05,
-  0.05,
-  mat.yellow,
-  -0.92,
-  2.0,
-  0.82
-);
+// small industrial lights
+topLeftFeature.add(box(0.25, 0.18, 0.1, mat.red, -0.65, 1.38, 0.62));
+topLeftFeature.add(box(0.25, 0.18, 0.1, mat.yellow2, -0.28, 1.38, 0.62));
 
-stairRail.rotation.z = -0.52;
-topLeftFeature.add(stairRail);
-
-// support beams
-for (let i = 0; i < 4; i++) {
-  topLeftFeature.add(
-    box(
-      0.08,
-      2.8,
-      0.08,
-      mat.darkGray,
-      -1.4 + (i % 2) * 2.8,
-      1.4,
-      -0.25 + Math.floor(i / 2) * 1.0
-    )
-  );
-}
-
-// warning lights
-topLeftFeature.add(
-  box(0.22, 0.18, 0.1, mat.red, -0.62, 1.55, 0.68)
-);
-
-topLeftFeature.add(
-  box(0.22, 0.18, 0.1, mat.yellow2, -0.28, 1.55, 0.68)
-);
-
-// warm light
-const topLeftLight = new THREE.PointLight(
-  "#d89a45",
-  1.2,
-  5
-);
-
-topLeftLight.position.set(-14.2, 4.1, -2.2);
-
+const topLeftLight = new THREE.PointLight("#d89a45", 1.1, 5);
+topLeftLight.position.set(-14.2, 3.8, -2.2);
 scene.add(topLeftLight);
 glowLights.push(topLeftLight);
-
 
 
 /* ---------- CONVEYORS ---------- */
@@ -879,30 +818,6 @@ for (let i = 0; i < 18; i++) {
   scene.add(rock);
 }
 
-/* ---------- PEOPLE ---------- */
-
-aperturePerson(-10.5, 4.4, 0.9);
-aperturePerson(-5.5, 3.6, 0.78);
-aperturePerson(-0.25, 3.0, 0.76);
-aperturePerson(7.6, 3.5, 0.82);
-
-const workerCarry = aperturePerson(-9.8, -1.15, 0.72);
-
-workerCarry.rotation.y = 0.35;
-
-const carriedPanel = box(
-  0.9,
-  0.06,
-  0.65,
-  mat.yellow2,
-  -9.55,
-  1.05,
-  -1.05
-);
-
-carriedPanel.rotation.z = -0.2;
-scene.add(carriedPanel);
-
 /* ---------- HOPPER / PICKER ARM ---------- */
 
 const hopper = new THREE.Group();
@@ -1019,9 +934,6 @@ forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, -0.51, Math.PI / 2));
 forklift.add(cyl(0.18, 0.2, mat.yellow2, -0.58, 0.2, 0.51, Math.PI / 2));
 forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
 
-const driver = aperturePerson(-3.95, 4.6, 0.55);
-
-driver.rotation.y = -0.85;
 
 const pallet = new THREE.Group();
 
