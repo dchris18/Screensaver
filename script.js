@@ -4,9 +4,15 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#141414");
 scene.fog = new THREE.Fog("#141414", 18, 36);
 
-const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 2.7, 21);
-camera.lookAt(0, 1.2, 0);
+const camera = new THREE.PerspectiveCamera(
+  30,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+
+camera.position.set(0, 2.2, 24);
+camera.lookAt(0, 1.1, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -166,8 +172,8 @@ function createConveyor(y, z, length = 19) {
   }
 }
 
-const upperBeltY = 0.75;
-const lowerBeltY = -1.25;
+const upperBeltY = 1.65;
+const lowerBeltY = -2.15;
 
 createConveyor(upperBeltY, 0);
 createConveyor(lowerBeltY, 0);
@@ -262,15 +268,15 @@ function createMachine(x, yOffset, label, type) {
 }
 
 const machines = [
-  createMachine(-7.1, 0, "01 PRESS", "press"),
-  createMachine(-2.35, 0, "02 SCAN", "scan"),
-  createMachine(2.35, 0, "03 SORT", "side"),
-  createMachine(7.1, 0, "04 CRUSH", "press"),
+  createMachine(-7.1, 1.0, "01 PRESS", "press"),
+  createMachine(-2.35, 1.0, "02 SCAN", "scan"),
+  createMachine(2.35, 1.0, "03 SORT", "side"),
+  createMachine(7.1, 1.0, "04 CRUSH", "press"),
 
-  createMachine(7.1, -2.0, "05 LASER", "laser"),
-  createMachine(2.35, -2.0, "06 CHECK", "scan"),
-  createMachine(-2.35, -2.0, "07 STAMP", "press"),
-  createMachine(-7.1, -2.0, "08 OUTPUT", "side")
+  createMachine(7.1, -2.8, "05 LASER", "laser"),
+  createMachine(2.35, -2.8, "06 CHECK", "scan"),
+  createMachine(-2.35, -2.8, "07 STAMP", "press"),
+  createMachine(-7.1, -2.8, "08 OUTPUT", "side")
 ];
 
 // ROBOT ARMS
@@ -473,10 +479,10 @@ function animate() {
   sparks.geometry.attributes.position.needsUpdate = true;
   dust.rotation.y += 0.0005;
 
-  camera.position.x = Math.sin(time * 0.18) * 0.18;
-  camera.position.y = 2.7 + Math.sin(time * 0.14) * 0.04;
-  camera.position.z = 21;
-  camera.lookAt(0, 1.2, 0);
+camera.position.x = Math.sin(time * 0.18) * 0.12;
+camera.position.y = 2.2 + Math.sin(time * 0.14) * 0.035;
+camera.position.z = 24;
+camera.lookAt(0, 1.1, 0);
 
   renderer.render(scene, camera);
 }
