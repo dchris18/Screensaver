@@ -306,6 +306,70 @@ scene.add(box(34, 7.5, 0.18, mat.wall, 0, 3.45, -8.9));
 scene.add(box(0.22, 7.5, 10.5, mat.wall, -16.9, 3.45, -3.9));
 scene.add(box(0.42, 7.6, 0.42, mat.gray, -16.45, 3.45, -7.35));
 
+// LEFT WALL VISIBLE DETAIL PANEL - this sits ON the blank wall area
+const leftWallDetail = new THREE.Group();
+leftWallDetail.position.set(-16.72, 0, -1.1);
+scene.add(leftWallDetail);
+
+// large wall-mounted utility panel
+leftWallDetail.add(box(0.08, 2.4, 2.4, mat.white2, 0, 3.0, 0));
+leftWallDetail.add(box(0.09, 1.55, 1.65, mat.dark, 0.05, 3.0, 0));
+
+// yellow header strip
+leftWallDetail.add(box(0.1, 0.12, 2.25, mat.yellow, 0.08, 4.25, 0));
+
+// vertical pipes
+for (let i = 0; i < 5; i++) {
+  leftWallDetail.add(
+    cyl(
+      0.035,
+      2.5,
+      mat.darkGray,
+      0.12,
+      2.9,
+      -1.0 + i * 0.48,
+      0,
+      0
+    )
+  );
+}
+
+// small control boxes
+for (let i = 0; i < 3; i++) {
+  leftWallDetail.add(
+    box(
+      0.12,
+      0.36,
+      0.28,
+      mat.gray,
+      0.16,
+      2.15 + i * 0.55,
+      1.35
+    )
+  );
+
+  leftWallDetail.add(
+    box(
+      0.13,
+      0.08,
+      0.14,
+      i % 2 === 0 ? mat.yellow2 : mat.red,
+      0.22,
+      2.15 + i * 0.55,
+      1.52
+    )
+  );
+}
+
+// warm wall light
+leftWallDetail.add(box(0.12, 0.42, 0.2, mat.gray, 0.12, 4.65, 0));
+leftWallDetail.add(box(0.13, 0.28, 0.12, mat.glow, 0.2, 4.65, 0));
+
+const leftWallLight = new THREE.PointLight("#d89a45", 1.1, 5);
+leftWallLight.position.set(-16.2, 4.5, -1.1);
+scene.add(leftWallLight);
+glowLights.push(leftWallLight);
+
 
 for (let i = 0; i < 18; i++) {
   scene.add(
