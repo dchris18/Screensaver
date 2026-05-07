@@ -744,7 +744,7 @@ let dragPoint = new THREE.Vector3();
 
 // forklift group
 const forklift = new THREE.Group();
-forklift.position.set(6.2, 0, 4.85);
+forklift.position.set(1.8, 0, 4.85);
 forklift.rotation.y = -0.65;
 forklift.scale.set(1.15, 1.15, 1.15);
 scene.add(forklift);
@@ -804,7 +804,7 @@ driver.add(box(0.24, 0.38, 0.08, mat.black, 0, 0.2, 0));
 
 // pallet on forks
 const pallet = new THREE.Group();
-pallet.position.set(7.95, 0.48, 4.1);
+pallet.position.set(3.55, 0.48, 4.1);
 pallet.rotation.y = -0.65;
 pallet.scale.set(1.15, 1.15, 1.15);
 scene.add(pallet);
