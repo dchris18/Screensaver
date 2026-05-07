@@ -895,9 +895,9 @@ const dragPoint = new THREE.Vector3();
 
 const forklift = new THREE.Group();
 
-forklift.position.set(-2.15, 0, 4.75);
+forklift.position.set(-2.75, 0, 5.25);
 forklift.rotation.y = -0.35;
-forklift.scale.set(1.2, 1.2, 1.2);
+forklift.scale.set(1.32, 1.32, 1.32);
 
 scene.add(forklift);
 
@@ -937,7 +937,7 @@ forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
 
 const pallet = new THREE.Group();
 
-pallet.position.set(-0.35, 0.5, 4.15);
+pallet.position.set(-0.85, 0.56, 4.55);
 pallet.rotation.y = -0.35;
 pallet.scale.set(1.16, 1.16, 1.16);
 
@@ -964,9 +964,9 @@ for (let i = 0; i < 12; i++) {
   crate.add(box(0.035, 0.28, 0.43, mat.dark, 0.13, 0.02, 0));
 
 crate.position.set(
-  -0.35 + bx,
+  -0.85 + bx,
   pallet.position.y + by,
-  4.15 + bz
+  4.55 + bz
 );
 
 crate.rotation.y = -0.35;
@@ -1061,25 +1061,21 @@ function animatePackageStages(p) {
 
   if (p.position.x > -4.0 && p.userData.stage === 1) {
     p.userData.stage = 2;
-
-    p.scale.set(1.24, 0.72, 1.18);
-
-    p.children[0].material = mat.yellow2;
-    p.children[1].material = mat.yellow;
+    p.scale.set(1.22, 0.74, 1.15);
+    if (p.children[0]) p.children[0].material = mat.yellow2;
+    if (p.children[1]) p.children[1].material = mat.yellow;
   }
 
   if (p.position.x > 1.1 && p.userData.stage === 2) {
     p.userData.stage = 3;
-    p.userData.scanned = true;
-
-    p.children[0].material = mat.white2;
-    p.children[1].material = mat.yellow;
+    if (p.children[0]) p.children[0].material = mat.white2;
+    if (p.children[1]) p.children[1].material = mat.yellow;
   }
 
-  if (p.position.x > 5.5 && p.userData.stage === 3) {
+  if (p.position.x > 5.35 && p.userData.stage === 3) {
     p.userData.stage = 4;
-    p.userData.assembled = true;
 
+    // add final “processed” details only once
     p.add(box(0.14, 0.18, 0.5, mat.dark, 0.27, 0.1, 0));
     p.add(box(0.36, 0.04, 0.36, mat.gray, 0, 0.28, 0));
 
@@ -1177,107 +1173,54 @@ function animate() {
     r.rotation.z += 0.08 + i * 0.01;
   });
 
-  machineB.gantry.position.x =
-    Math.sin(time * 1.2) * 0.35;
+// press: slow slide, sharp stamp
+machineB.gantry.position.x = Math.sin(time * 0.9) * 0.28;
 
-  machineB.plate.position.y =
-    1.62 + Math.sin(time * 2.1) * 0.12;
+const pressPulse = Math.abs(Math.sin(time * 2.2));
+machineB.plate.position.y = 1.7 - pressPulse * 0.28;
 
-  machineC.scanner.position.x =
-    Math.sin(time * 1.6) * 0.8;
+// scanner: sweeping bar
+machineC.scanner.position.x = Math.sin(time * 1.7) * 0.95;
+machineC.scanner.position.y = 1.78;
 
-  machineC.scanner.position.y =
-    1.76 + Math.sin(time * 2.5) * 0.05;
-
-  machineD.arm.rotation.z =
-    -0.25 + Math.sin(time * 1.8) * 0.18;
-
-  machineD.flap.rotation.z =
-    -0.08 + Math.sin(time * 1.4) * 0.06;
+// cutter/output arm: controlled mechanical motion
+machineD.arm.rotation.z = -0.25 + Math.sin(time * 1.4) * 0.28;
+machineD.flap.rotation.z = -0.08 + Math.sin(time * 1.1) * 0.08;
 
 packages.forEach((p) => {
   if (selectedBox === p) return;
 
   p.position.x += p.userData.speed;
 
-  if (p.position.x <= 5.0) {
+  // conveyor path: straight belt, then curved-looking transfer, then exit belt
+  if (p.position.x < 4.85) {
     p.position.z = 0;
     p.position.y = 1.02;
-  } else {
-    p.position.z = -0.62;
+    p.rotation.z = 0;
+  } else if (p.position.x < 6.25) {
+    const t = (p.position.x - 4.85) / 1.4;
+    p.position.z = THREE.MathUtils.lerp(0, -1.1, t);
+    p.position.y = THREE.MathUtils.lerp(1.02, 1.13, t);
+    p.rotation.y += 0.01;
+  } else if (p.position.x < 8.05) {
+    p.position.z = -1.1;
     p.position.y = 1.13;
+    p.rotation.z = Math.sin(time * 3 + p.position.x) * 0.015;
   }
 
-  if (p.position.x > 8.15) {
-    p.position.x = -9.4;
-    p.position.z = 0;
-    p.position.y = 1.02;
-    p.rotation.set(0, 0, 0);
-    p.scale.set(1, 1, 1);
-
-    p.userData.stage = 0;
-    p.userData.scanned = false;
-    p.userData.assembled = false;
-
-    if (p.children[0]) p.children[0].material = mat.yellow;
-    if (p.children[1]) p.children[1].material = mat.yellow2;
-
-    while (p.children.length > 2) {
-      p.remove(p.children[p.children.length - 1]);
-    }
+  // reset BEFORE it visually leaves the belt
+  if (p.position.x >= 8.05) {
+    resetPackage(p);
+    p.position.x = -9.6;
+    return;
   }
 
   animatePackageStages(p);
 
-  p.position.z = THREE.MathUtils.clamp(p.position.z, -0.65, 0.05);
-
-  if (p.userData.stage === 1) p.rotation.y += 0.003;
-  if (p.userData.stage === 2) p.rotation.y += 0.004;
-  if (p.userData.stage === 3) p.rotation.y += 0.005;
-
-  if (p.userData.stage === 4) {
-    p.rotation.y += 0.003;
-    p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.02;
-  }
+  if (p.userData.stage === 1) p.rotation.y += 0.004;
+  if (p.userData.stage === 2) p.rotation.y += 0.006;
+  if (p.userData.stage === 3) p.rotation.y += 0.008;
 });
-
-  picker.rotation.y = Math.sin(time * 0.5) * 0.08;
-
-  picker.userData.lowerArm.rotation.z =
-    -0.9 + Math.sin(time * 1.4) * 0.18;
-
-  picker.userData.upperGroup.rotation.z =
-    Math.sin(time * 1.8) * 0.25;
-
-  picker.userData.claw.position.y =
-    1.02 + Math.sin(time * 2.2) * 0.08;
-
-  glowLights.forEach((l, i) => {
-    l.intensity =
-      0.65 +
-      Math.sin(time * 2 + i) * 0.12;
-  });
-
-  movingIndicators.forEach((line) => {
-    line.position.x += line.userData.speed;
-
-    if (line.position.x > 18) {
-      line.position.x = -18;
-    }
-  });
-
-  camera.position.x =
-    7.2 + Math.sin(time * 0.08) * 0.2;
-
-  camera.position.y =
-    5.1 + Math.sin(time * 0.1) * 0.06;
-
-  camera.position.z = 15.8;
-
-  camera.lookAt(-1.2, 0.9, 0);
-
-  renderer.render(scene, camera);
-}
 
 animate();
 
