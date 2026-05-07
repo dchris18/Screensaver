@@ -178,6 +178,40 @@ sun.shadow.camera.bottom = -12;
 
 scene.add(sun);
 
+// GLOW LIGHTS
+
+const glowLights = [];
+
+for (let i = 0; i < 12; i++) {
+  const light = new THREE.PointLight(
+    "#fff2c2",
+    0.5,
+    8
+  );
+
+  light.position.set(
+    -15 + i * 2.8,
+    4.5,
+    -5
+  );
+
+  scene.add(light);
+
+  glowLights.push(light);
+
+  const fixture = box(
+    0.6,
+    0.08,
+    0.18,
+    mat.yellow2,
+    light.position.x,
+    light.position.y,
+    light.position.z
+  );
+
+  scene.add(fixture);
+}
+
 // FLOOR
 scene.add(
   box(32, 0.18, 20, mat.floor, 0, -0.1, 0)
@@ -197,6 +231,51 @@ for (let x = -16; x <= 16; x += 2) {
 
     scene.add(tile);
   }
+}
+
+// BACKGROUND STRUCTURE
+
+for (let i = 0; i < 18; i++) {
+  const beam = box(
+    0.18,
+    7,
+    0.18,
+    mat.gray,
+    -18 + i * 2.2,
+    3.5,
+    -7.5
+  );
+
+  scene.add(beam);
+}
+
+for (let i = 0; i < 12; i++) {
+  const horiz = box(
+    36,
+    0.08,
+    0.08,
+    mat.darkGray,
+    0,
+    1.2 + i * 0.55,
+    -7.5
+  );
+
+  scene.add(horiz);
+}
+
+// giant rear wall panels
+for (let i = 0; i < 8; i++) {
+  const wall = box(
+    3.2,
+    5.2,
+    0.12,
+    i % 2 === 0 ? mat.white2 : mat.tileB,
+    -14 + i * 4,
+    2.5,
+    -8.8
+  );
+
+  scene.add(wall);
 }
 
 // HELPERS
@@ -590,6 +669,58 @@ for (let i = 0; i < 5; i++) {
 
   g.add(
     box(0.35, 0.55, 0.35, mat.gray, 0.65, 2.35, 0)
+  );
+}
+
+// DISTANT FACTORY LAYERS
+
+for (let i = 0; i < 14; i++) {
+  const distant = new THREE.Group();
+
+  distant.position.set(
+    -20 + i * 3,
+    0,
+    -12 - Math.random() * 6
+  );
+
+  scene.add(distant);
+
+  const h = 1.2 + Math.random() * 2.5;
+
+  distant.add(
+    box(
+      2 + Math.random() * 2,
+      h,
+      1.5 + Math.random(),
+      mat.darkGray,
+      0,
+      h / 2,
+      0
+    )
+  );
+
+  distant.add(
+    box(
+      1.2,
+      0.08,
+      1.4,
+      mat.yellow,
+      0,
+      h + 0.2,
+      0
+    )
+  );
+
+  distant.add(
+    box(
+      0.4,
+      0.5,
+      0.08,
+      mat.dark,
+      0,
+      h * 0.7,
+      0.76
+    )
   );
 }
 
@@ -1128,6 +1259,26 @@ window.addEventListener("pointerup", () => {
   document.body.style.cursor = "default";
 });
 
+const movingIndicators = [];
+
+for (let i = 0; i < 24; i++) {
+  const line = box(
+    0.6,
+    0.04,
+    0.04,
+    mat.yellow,
+    -18 + Math.random() * 36,
+    0.6 + Math.random() * 4,
+    -7.4
+  );
+
+  scene.add(line);
+
+  line.userData.speed = 0.01 + Math.random() * 0.02;
+
+  movingIndicators.push(line);
+}
+
 animate();
 
 window.addEventListener("resize", () => {
@@ -1135,6 +1286,22 @@ window.addEventListener("resize", () => {
     window.innerWidth / window.innerHeight;
 
   camera.updateProjectionMatrix();
+
+// BACKGROUND ANIMATION
+
+glowLights.forEach((l, i) => {
+  l.intensity =
+    0.45 +
+    Math.sin(time * 2 + i) * 0.08;
+});
+
+movingIndicators.forEach((line) => {
+  line.position.x += line.userData.speed;
+
+  if (line.position.x > 18) {
+    line.position.x = -18;
+  }
+});
 
   renderer.setSize(
     window.innerWidth,
