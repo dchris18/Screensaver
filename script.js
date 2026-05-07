@@ -743,7 +743,8 @@ let dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.02);
 let dragPoint = new THREE.Vector3();
 
 const forklift = new THREE.Group();
-forklift.position.set(5.8, 0, 2.8);
+forklift.position.set(2.8, 0, 4.8);
+forklift.scale.set(1.25, 1.25, 1.25);
 forklift.rotation.y = -0.35;
 scene.add(forklift);
 
@@ -768,7 +769,8 @@ forklift.add(box(1.45, 0.06, 0.08, mat.darkGray, 1.35, 0.42, 0.25));
 
 // pallet
 const pallet = new THREE.Group();
-pallet.position.set(7.2, 0.45, 2.6);
+pallet.position.set(4.4, 0.45, 4.45);
+pallet.scale.set(1.25, 1.25, 1.25);
 scene.add(pallet);
 
 pallet.add(box(1.5, 0.12, 1.15, mat.darkGray, 0, 0, 0));
@@ -790,7 +792,8 @@ for (let i = 0; i < 6; i++) {
   crate.add(body);
   crate.add(top);
 
-crate.position.set(7.2 + bx, by, 2.6 + bz);
+crate.position.set(4.4 + bx, by + 0.12, 4.45 + bz);
+crate.scale.set(1.25, 1.25, 1.25);
   crate.userData.draggable = true;
   crate.userData.onConveyor = false;
   crate.userData.speed = 0.022;
