@@ -34,8 +34,8 @@ document.body.appendChild(renderer.domElement);
 
 const C = {
   floor: "#eadfce",
-  tileA: "#f3eadc",
-  tileB: "#ded2c2",
+tileA: "#f5efe3",
+tileB: "#d8ccba",
 
   wall: "#eadbc8",
   wall2: "#f4eadc",
@@ -274,20 +274,18 @@ function addLamp(x, y, z, power = 1.2) {
 
 /* ---------- FLOOR ---------- */
 
-scene.add(
-  box(34, 0.18, 21, mat.floor, 0, -0.1, 0)
-);
-
 for (let x = -17; x <= 17; x += 2) {
   for (let z = -10; z <= 10; z += 2) {
+    const isLight = ((x + z) / 2) % 2 === 0;
+
     scene.add(
       box(
-        1.94,
-        0.012,
-        1.94,
-        (x + z) % 4 === 0 ? mat.tileA : mat.tileB,
+        1.96,
+        0.014,
+        1.96,
+        isLight ? mat.tileA : mat.tileB,
         x,
-        0.01,
+        0.018,
         z
       )
     );
@@ -569,26 +567,33 @@ function aperturePerson(x, z, scale = 1) {
 
 function createPlant(x, z, scale = 1) {
   const plant = new THREE.Group();
-
   plant.position.set(x, 0, z);
   plant.scale.set(scale, scale, scale);
-
   scene.add(plant);
 
-  plant.add(box(0.55, 0.55, 0.55, mat.gray, 0, 0.28, 0));
+  plant.add(box(0.52, 0.5, 0.52, mat.gray, 0, 0.25, 0));
 
-  for (let i = 0; i < 18; i++) {
-    const leaf = capsule(
-      0.055,
-      0.62,
-      i % 2 === 0 ? mat.green : mat.green2,
-      Math.sin(i * 0.7) * 0.18,
-      0.82 + Math.random() * 0.25,
-      Math.cos(i * 0.7) * 0.18
+  const soil = cyl(0.22, 0.08, mat.dark, 0, 0.54, 0);
+  plant.add(soil);
+
+  for (let i = 0; i < 22; i++) {
+    const leaf = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.055, 0.72 + Math.random() * 0.18, 10, 18),
+      i % 2 === 0 ? mat.green : mat.green2
     );
 
-    leaf.rotation.z = -0.75 + Math.random() * 1.5;
-    leaf.rotation.y = i * 0.65;
+    const angle = i * 0.55;
+    const radius = 0.08 + Math.random() * 0.18;
+
+    leaf.position.set(
+      Math.cos(angle) * radius,
+      0.78 + Math.random() * 0.18,
+      Math.sin(angle) * radius
+    );
+
+    leaf.rotation.z = -0.9 + Math.random() * 1.8;
+    leaf.rotation.y = angle;
+    leaf.rotation.x = 0.3 + Math.random() * 0.45;
 
     plant.add(leaf);
   }
@@ -967,8 +972,8 @@ const dragPoint = new THREE.Vector3();
 
 const forklift = new THREE.Group();
 
-forklift.position.set(-4.0, 0, 4.65);
-forklift.rotation.y = -0.86;
+forklift.position.set(-2.15, 0, 4.75);
+forklift.rotation.y = -0.35;
 forklift.scale.set(1.2, 1.2, 1.2);
 
 scene.add(forklift);
@@ -1012,8 +1017,8 @@ driver.rotation.y = -0.85;
 
 const pallet = new THREE.Group();
 
-pallet.position.set(-2.1, 0.5, 4.25);
-pallet.rotation.y = -0.86;
+pallet.position.set(-0.35, 0.5, 4.15);
+pallet.rotation.y = -0.35;
 pallet.scale.set(1.16, 1.16, 1.16);
 
 scene.add(pallet);
@@ -1038,11 +1043,13 @@ for (let i = 0; i < 12; i++) {
   crate.add(box(0.3, 0.04, 0.3, mat.yellow2, 0, 0.17, 0));
   crate.add(box(0.035, 0.28, 0.43, mat.dark, 0.13, 0.02, 0));
 
-  crate.position.set(
-    -2.1 + bx,
-    pallet.position.y + by,
-    4.25 + bz
-  );
+crate.position.set(
+  -0.35 + bx,
+  pallet.position.y + by,
+  4.15 + bz
+);
+
+crate.rotation.y = -0.35;
 
   crate.rotation.y = -0.86;
 
@@ -1208,13 +1215,16 @@ window.addEventListener("pointerup", () => {
 
   const onMainConveyor =
     selectedBox.position.x > -9.8 &&
-    selectedBox.position.x < 9.4 &&
-    selectedBox.position.z > -0.9 &&
-    selectedBox.position.z < 0.9;
+    selectedBox.position.x < 8.6 &&
+    selectedBox.position.z > -0.85 &&
+    selectedBox.position.z < 0.85;
 
   if (onMainConveyor) {
     selectedBox.position.y = 1.02;
     selectedBox.position.z = 0;
+    selectedBox.rotation.x = 0;
+    selectedBox.rotation.z = 0;
+
     selectedBox.userData.onConveyor = true;
     selectedBox.userData.stage = 0;
 
@@ -1222,7 +1232,8 @@ window.addEventListener("pointerup", () => {
       packages.push(selectedBox);
     }
   } else {
-    selectedBox.position.y = 1.15;
+    selectedBox.position.y = 0.88;
+    selectedBox.userData.onConveyor = false;
   }
 
   selectedBox = null;
@@ -1264,47 +1275,45 @@ function animate() {
   machineD.flap.rotation.z =
     -0.08 + Math.sin(time * 1.4) * 0.06;
 
-  packages.forEach((p) => {
-    p.position.x += p.userData.speed;
+packages.forEach((p) => {
+  if (selectedBox === p) return;
 
-    if (p.position.x > 9.4) {
-      if (draggableBoxes.includes(p)) {
-        p.position.x = -9.8;
-        p.position.z = 0;
-        p.position.y = 1.02;
-        p.userData.onConveyor = true;
-      } else {
-        resetPackage(p);
-      }
-    }
+  p.position.x += p.userData.speed;
 
-    animatePackageStages(p);
-
-    if (p.position.x > 5.0) {
-      p.position.z = -0.75;
-      p.position.y = 1.18;
-    } else {
+  if (p.position.x > 8.6) {
+    if (draggableBoxes.includes(p)) {
+      p.position.x = -9.4;
       p.position.z = 0;
       p.position.y = 1.02;
+      p.rotation.set(0, 0, 0);
+      p.userData.stage = 0;
+      p.userData.onConveyor = true;
+    } else {
+      resetPackage(p);
     }
+  }
 
-    if (p.userData.stage === 1) {
-      p.rotation.y += 0.003;
-    }
+  animatePackageStages(p);
 
-    if (p.userData.stage === 2) {
-      p.rotation.y += 0.005;
-    }
+  if (p.position.x > 5.0) {
+    p.position.z = -0.62;
+    p.position.y = 1.13;
+  } else {
+    p.position.z = 0;
+    p.position.y = 1.02;
+  }
 
-    if (p.userData.stage === 3) {
-      p.rotation.y += 0.006;
-    }
+  p.position.z = THREE.MathUtils.clamp(p.position.z, -0.7, 0.25);
 
-    if (p.userData.stage === 4) {
-      p.rotation.y += 0.004;
-      p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.04;
-    }
-  });
+  if (p.userData.stage === 1) p.rotation.y += 0.003;
+  if (p.userData.stage === 2) p.rotation.y += 0.005;
+  if (p.userData.stage === 3) p.rotation.y += 0.006;
+
+  if (p.userData.stage === 4) {
+    p.rotation.y += 0.004;
+    p.rotation.z = Math.sin(time * 2 + p.position.x) * 0.04;
+  }
+});
 
   picker.rotation.y = Math.sin(time * 0.5) * 0.08;
 
