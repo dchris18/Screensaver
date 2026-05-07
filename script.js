@@ -1034,9 +1034,9 @@ let dragPoint = new THREE.Vector3();
 
 // forklift group
 const forklift = new THREE.Group();
-forklift.position.set(-3.6, 0, 4.75);
-forklift.rotation.y = -0.65;
-forklift.scale.set(1.15, 1.15, 1.15);
+forklift.position.set(-4.9, 0, 5.25);
+forklift.rotation.y = -1.05;
+forklift.scale.set(1.28, 1.28, 1.28);
 scene.add(forklift);
 
 // lower chassis
@@ -1094,8 +1094,8 @@ driver.add(box(0.24, 0.38, 0.08, mat.black, 0, 0.2, 0));
 
 // pallet on forks
 const pallet = new THREE.Group();
-pallet.position.set(-1.85, 0.48, 4.0);
-pallet.rotation.y = -0.65;
+pallet.position.set(-3.05, 0.5, 4.55);
+pallet.rotation.y = -1.05;
 pallet.scale.set(1.15, 1.15, 1.15);
 scene.add(pallet);
 
@@ -1126,12 +1126,12 @@ for (let i = 0; i < 12; i++) {
   crate.add(seam);
 
 crate.position.set(
-  -1.85 + bx,
+  -3.05 + bx,
   pallet.position.y + by,
-  4.0 + bz
+  4.55 + bz
 );
 
-  crate.rotation.y = pallet.rotation.y;
+crate.rotation.y = -1.05;
 
   crate.userData.draggable = true;
   crate.userData.onConveyor = false;
