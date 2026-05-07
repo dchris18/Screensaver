@@ -937,7 +937,7 @@ forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
 
 const pallet = new THREE.Group();
 
-pallet.position.set(-0.85, 0.56, 4.55);
+pallet.position.set(-0.85, 0.42, 4.55);
 pallet.rotation.y = -0.35;
 pallet.scale.set(1.16, 1.16, 1.16);
 
@@ -955,7 +955,7 @@ for (let i = 0; i < 12; i++) {
 
   const bx = -0.5 + col * 0.5;
   const bz = -0.25 + row * 0.5;
-  const by = 0.38 + layer * 0.36;
+const by = 0.28 + layer * 0.34;
 
   const crate = new THREE.Group();
 
@@ -997,6 +997,7 @@ function createPackage(x, delay = 0) {
   p.userData.speed = 0.02 + Math.random() * 0.004;
   p.userData.stage = 0;
   p.userData.delay = delay;
+  p.userData.pathStage = 0;
   p.userData.scanned = false;
   p.userData.assembled = false;
 
@@ -1146,7 +1147,7 @@ window.addEventListener("pointerup", () => {
       packages.push(selectedBox);
     }
 } else {
-  selectedBox.position.y = 0.52;
+selectedBox.position.y = 0.25;
   selectedBox.rotation.x = 0;
   selectedBox.rotation.z = 0;
   selectedBox.userData.onConveyor = false;
@@ -1187,38 +1188,60 @@ function animate() {
   machineD.arm.rotation.z = -0.25 + Math.sin(time * 1.4) * 0.28;
   machineD.flap.rotation.z = -0.08 + Math.sin(time * 1.1) * 0.08;
 
-  packages.forEach((p) => {
-    if (selectedBox === p) return;
+packages.forEach((p) => {
+  if (selectedBox === p) return;
 
+  // stage 0: main conveyor, moving right
+  if (p.userData.pathStage === undefined) {
+    p.userData.pathStage = 0;
+  }
+
+  if (p.userData.pathStage === 0) {
     p.position.x += p.userData.speed;
+    p.position.z = 0;
+    p.position.y = 1.02;
 
-    if (p.position.x < 4.85) {
-      p.position.z = 0;
-      p.position.y = 1.02;
-      p.rotation.z = 0;
-    } else if (p.position.x < 6.25) {
-      const t = (p.position.x - 4.85) / 1.4;
-      p.position.z = THREE.MathUtils.lerp(0, -1.1, t);
-      p.position.y = THREE.MathUtils.lerp(1.02, 1.13, t);
-      p.rotation.y += 0.01;
-    } else if (p.position.x < 8.05) {
-      p.position.z = -1.1;
-      p.position.y = 1.13;
-      p.rotation.z = Math.sin(time * 3 + p.position.x) * 0.015;
+    if (p.position.x >= 5.15) {
+      p.userData.pathStage = 1;
+      p.position.x = 5.15;
     }
+  }
+
+  // stage 1: 90-degree turn, moving back into next belt
+  else if (p.userData.pathStage === 1) {
+    p.position.z -= p.userData.speed;
+    p.position.x = 5.15;
+    p.position.y = 1.08;
+    p.rotation.y += 0.025;
+
+    if (p.position.z <= -1.35) {
+      p.userData.pathStage = 2;
+      p.position.z = -1.35;
+    }
+  }
+
+  // stage 2: exit conveyor, moving right again
+  else if (p.userData.pathStage === 2) {
+    p.position.x += p.userData.speed;
+    p.position.z = -1.35;
+    p.position.y = 1.13;
 
     if (p.position.x >= 8.05) {
       resetPackage(p);
       p.position.x = -9.6;
+      p.position.z = 0;
+      p.position.y = 1.02;
+      p.userData.pathStage = 0;
       return;
     }
+  }
 
-    animatePackageStages(p);
+  animatePackageStages(p);
 
-    if (p.userData.stage === 1) p.rotation.y += 0.004;
-    if (p.userData.stage === 2) p.rotation.y += 0.006;
-    if (p.userData.stage === 3) p.rotation.y += 0.008;
-  });
+  if (p.userData.stage === 1) p.rotation.y += 0.004;
+  if (p.userData.stage === 2) p.rotation.y += 0.006;
+  if (p.userData.stage === 3) p.rotation.y += 0.008;
+});
 
   picker.rotation.y = Math.sin(time * 0.5) * 0.08;
 
