@@ -655,6 +655,83 @@ aperturePerson(-5.5, 3.6, 0.75);
 aperturePerson(0.2, 2.9, 0.72);
 aperturePerson(7.6, 3.5, 0.8);
 
+// BOX BIN / HOPPER
+const hopper = new THREE.Group();
+
+hopper.position.set(-13.2, 0, 0);
+
+scene.add(hopper);
+
+// outer walls
+hopper.add(box(2.4, 1.2, 2.1, mat.gray, 0, 0.6, 0));
+
+hopper.add(box(2.2, 0.9, 1.9, mat.dark, 0, 0.75, 0));
+
+// open top
+hopper.add(box(2.4, 0.12, 0.12, mat.yellow, 0, 1.22, -1.0));
+hopper.add(box(2.4, 0.12, 0.12, mat.yellow, 0, 1.22, 1.0));
+
+hopper.add(box(0.12, 0.12, 2.1, mat.yellow, -1.15, 1.22, 0));
+hopper.add(box(0.12, 0.12, 2.1, mat.yellow, 1.15, 1.22, 0));
+
+// random stacked boxes inside hopper
+for (let i = 0; i < 12; i++) {
+  const scrap = box(
+    0.4,
+    0.28,
+    0.4,
+    Math.random() > 0.5 ? mat.yellow : mat.white2,
+    (Math.random() - 0.5) * 1.2,
+    0.3 + Math.random() * 0.5,
+    (Math.random() - 0.5) * 1.1
+  );
+
+  scrap.rotation.y = Math.random() * Math.PI;
+
+  hopper.add(scrap);
+}
+
+// PICKER ARM
+const picker = new THREE.Group();
+
+picker.position.set(-11.4, 0, 0);
+
+scene.add(picker);
+
+// base
+picker.add(cyl(0.32, 0.25, mat.darkGray, 0, 0.12, 0));
+
+// lower arm
+const lowerArm = box(0.22, 1.5, 0.22, mat.yellow, 0, 0.9, 0);
+lowerArm.rotation.z = -0.9;
+
+picker.add(lowerArm);
+
+// upper arm group
+const upperGroup = new THREE.Group();
+upperGroup.position.set(-0.55, 1.45, 0);
+
+picker.add(upperGroup);
+
+const upperArm = box(0.18, 1.2, 0.18, mat.gray, 0, 0.5, 0);
+upperArm.rotation.z = 1.1;
+
+upperGroup.add(upperArm);
+
+// claw
+const claw = new THREE.Group();
+
+claw.position.set(0.52, 1.02, 0);
+
+upperGroup.add(claw);
+
+claw.add(box(0.08, 0.4, 0.08, mat.dark, -0.08, 0, 0));
+claw.add(box(0.08, 0.4, 0.08, mat.dark, 0.08, 0, 0));
+
+// save refs
+picker.userData.lowerArm = lowerArm;
+picker.userData.upperGroup = upperGroup;
+picker.userData.claw = claw;
 // PACKAGES
 const packages = [];
 
@@ -684,6 +761,7 @@ function createPackage(x, delay = 0) {
 for (let i = 0; i < 7; i++) {
   createPackage(-9.6 + i * 2.6, i * 0.4);
 }
+
 
 // ANIMATION
 let time = 0;
@@ -832,6 +910,18 @@ function animate() {
     }
   });
 
+// PICKER ARM ANIMATION
+picker.rotation.y = Math.sin(time * 0.5) * 0.08;
+
+picker.userData.lowerArm.rotation.z =
+  -0.9 + Math.sin(time * 1.4) * 0.18;
+
+picker.userData.upperGroup.rotation.z =
+  Math.sin(time * 1.8) * 0.25;
+
+picker.userData.claw.position.y =
+  1.02 + Math.sin(time * 2.2) * 0.08;
+  
   camera.position.x =
     8 + Math.sin(time * 0.08) * 0.25;
 
