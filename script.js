@@ -824,18 +824,25 @@ for (let i = 0; i < 5; i++) {
 /* ---------- PROPS ---------- */
 
 for (let i = 0; i < 8; i++) {
-  scene.add(
-    cyl(
-      0.25,
-      0.45,
-      mat.gray,
-      -10.8 + (i % 4) * 0.55,
-      0.23,
-      3.2 + Math.floor(i / 4) * 0.55
-    )
-  );
-}
+  const barrel = new THREE.Group();
 
+  barrel.position.set(
+    -10.8 + (i % 4) * 0.55,
+    0,
+    3.2 + Math.floor(i / 4) * 0.55
+  );
+
+  scene.add(barrel);
+
+  barrel.add(cyl(0.25, 0.52, mat.gray, 0, 0.26, 0));
+  barrel.add(cyl(0.255, 0.035, mat.darkGray, 0, 0.53, 0));
+  barrel.add(cyl(0.255, 0.035, mat.darkGray, 0, 0.03, 0));
+
+  barrel.add(cyl(0.26, 0.035, mat.darkGray, 0, 0.18, 0));
+  barrel.add(cyl(0.26, 0.035, mat.darkGray, 0, 0.36, 0));
+
+  barrel.add(box(0.18, 0.035, 0.04, mat.dark, 0, 0.56, 0));
+}
 
 /* ---------- HOPPER / PICKER ARM ---------- */
 
@@ -956,7 +963,7 @@ forklift.add(cyl(0.18, 0.2, mat.yellow2, 0.55, 0.2, 0.51, Math.PI / 2));
 
 const pallet = new THREE.Group();
 
-pallet.position.set(-0.55, 0.24, 5.12);
+pallet.position.set(1.15, 0.24, 5.12);
 pallet.rotation.y = -0.18;
 pallet.scale.set(1.16, 1.16, 1.16);
 
@@ -983,7 +990,7 @@ const by = 0.2 + layer * 0.32;
   crate.add(box(0.035, 0.28, 0.43, mat.dark, 0.13, 0.02, 0));
 
 crate.position.set(
-  -0.55 + bx,
+  1.15 + bx,
   pallet.position.y + by,
   5.12 + bz
 );
@@ -1092,15 +1099,13 @@ function animatePackageStages(p) {
     if (p.children[1]) p.children[1].material = mat.yellow;
   }
 
-  if (p.position.x > 5.35 && p.userData.stage === 3) {
-    p.userData.stage = 4;
+if (p.position.x > 5.35 && p.userData.stage === 3) {
+  p.userData.stage = 4;
 
-    // add final “processed” details only once
-    p.add(box(0.14, 0.18, 0.5, mat.dark, 0.27, 0.1, 0));
-    p.add(box(0.36, 0.04, 0.36, mat.gray, 0, 0.28, 0));
+  if (p.children[0]) p.children[0].material = mat.yellow;
+  if (p.children[1]) p.children[1].material = mat.yellow2;
 
-    p.scale.set(1.05, 0.85, 1.05);
-  }
+  p.scale.set(1, 1, 1);
 }
 
 /* ---------- DRAGGING ---------- */
