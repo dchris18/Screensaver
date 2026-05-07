@@ -1107,6 +1107,7 @@ if (p.position.x > 5.35 && p.userData.stage === 3) {
 
   p.scale.set(1, 1, 1);
 }
+}
 
 /* ---------- DRAGGING ---------- */
 
