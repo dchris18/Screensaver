@@ -800,6 +800,11 @@ function cutterOutput() {
   return { g, arm, flap };
 }
 
+const machineA = feedChamber();
+const machineB = compressionPress();
+const machineC = scannerTable();
+const machineD = cutterOutput();
+
 /* ---------- BACKGROUND MACHINES ---------- */
 
 for (let i = 0; i < 5; i++) {
