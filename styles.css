@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+  background: #030712;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: block;
+}
+
+.title {
+  position: fixed;
+
+  top: 24px;
+  left: 24px;
+
+  color: #b9e6ff;
+
+  font-size: 18px;
+  letter-spacing: 2px;
+
+  z-index: 10;
+
+  text-shadow:
+    0 0 10px rgba(91, 199, 255, 0.7),
+    0 0 20px rgba(91, 199, 255, 0.5);
+}
