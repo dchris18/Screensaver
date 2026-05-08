@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-/* ---------- BASIC SETUP ---------- */
+
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#e3d6c3");
@@ -30,7 +30,7 @@ renderer.toneMappingExposure = 1.08;
 
 document.body.appendChild(renderer.domElement);
 
-/* ---------- COLORS / MATERIALS ---------- */
+
 
 const C = {
   floor: "#cdbda7",
@@ -180,7 +180,7 @@ const mat = {
   })
 };
 
-/* ---------- HELPERS ---------- */
+
 
 function box(w, h, d, material, x = 0, y = 0, z = 0) {
   const mesh = new THREE.Mesh(
@@ -237,7 +237,7 @@ function capsule(radius, length, material, x = 0, y = 0, z = 0) {
   return mesh;
 }
 
-/* ---------- LIGHTING ---------- */
+
 
 scene.add(
   new THREE.HemisphereLight("#fff4df", "#8d7c68", 1.35)
@@ -272,7 +272,7 @@ function addLamp(x, y, z, power = 0.65) {
   return light;
 }
 
-/* ---------- FLOOR ---------- */
+
 
 scene.add(
   box(34, 0.18, 21, mat.floor, 0, -0.1, 0)
@@ -298,11 +298,11 @@ for (let xi = 0; xi < 18; xi++) {
   }
 }
 
-/* ---------- BACK WALL ---------- */
+
 
 scene.add(box(34, 7.5, 0.18, mat.wall, 0, 3.45, -8.9));
 
-// LEFT SIDE WALL - fixes the empty white top-left area
+
 scene.add(box(0.22, 7.5, 10.5, mat.wall, -16.9, 3.45, -3.9));
 scene.add(box(0.42, 7.6, 0.42, mat.gray, -16.45, 3.45, -7.35));
 
@@ -361,7 +361,7 @@ for (let i = 0; i < 10; i++) {
   addLamp(-14.5 + i * 3.1, 4.55, -6.9, 0.9);
 }
 
-/* ---------- WALL SIGNAGE ---------- */
+
 
 function makeTextPanel(text, x, y, z, w = 2.4, h = 1.2) {
   const canvas = document.createElement("canvas");
@@ -405,38 +405,38 @@ addLamp(-15.4, 4.25, -5.8, 1.4);
 addLamp(-14.1, 4.25, -5.8, 1.4);
 addLamp(-12.8, 4.25, -5.8, 1.4);
 
-/* ---------- CLEAN TOP LEFT CATWALK ---------- */
+
 
 const topLeftFeature = new THREE.Group();
 topLeftFeature.position.set(-14.25, 0, -3.15);
 scene.add(topLeftFeature);
 
-// tall back structure
+
 topLeftFeature.add(box(2.55, 4.15, 1.15, mat.white2, 0, 2.08, 0));
 topLeftFeature.add(box(2.7, 0.18, 1.28, mat.yellow, 0, 4.25, 0));
 
-// dark service screen
+
 topLeftFeature.add(box(1.7, 1.0, 0.08, mat.dark, 0, 2.75, 0.65));
 
-// lower service base
+
 topLeftFeature.add(box(2.1, 0.8, 1.0, mat.gray, 0, 0.45, 0));
 topLeftFeature.add(box(1.6, 0.45, 0.08, mat.dark, 0, 0.55, 0.55));
 
-// upper balcony platform
+
 topLeftFeature.add(box(3.8, 0.18, 1.05, mat.gray, 0.55, 3.55, 0.15));
 topLeftFeature.add(box(3.6, 0.08, 0.9, mat.darkGray, 0.55, 3.67, 0.15));
 
-// balcony posts
+
 for (let i = 0; i < 7; i++) {
   topLeftFeature.add(
     box(0.055, 0.6, 0.055, mat.darkGray, -1.0 + i * 0.55, 3.95, 0.68)
   );
 }
 
-// balcony rail
+
 topLeftFeature.add(box(3.45, 0.06, 0.06, mat.yellow, 0.55, 4.28, 0.68));
 
-// clean side stair body
+
 const stairBase = new THREE.Group();
 stairBase.position.set(-1.55, 0.8, 0.65);
 stairBase.rotation.z = -0.42;
@@ -459,18 +459,18 @@ for (let i = 0; i < 8; i++) {
   );
 }
 
-// stair handrail
+
 const handRail = box(2.35, 0.055, 0.055, mat.yellow, -0.05, 2.12, 0.92);
 handRail.rotation.z = -0.42;
 topLeftFeature.add(handRail);
 
-// support legs
+
 topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, -1.25, 1.6, -0.3));
 topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, 1.75, 1.6, -0.3));
 topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, -1.25, 1.6, 0.6));
 topLeftFeature.add(box(0.09, 3.2, 0.09, mat.darkGray, 1.75, 1.6, 0.6));
 
-// small industrial lights
+
 topLeftFeature.add(box(0.25, 0.18, 0.1, mat.red, -0.65, 1.38, 0.62));
 topLeftFeature.add(box(0.25, 0.18, 0.1, mat.yellow2, -0.28, 1.38, 0.62));
 
@@ -480,7 +480,7 @@ scene.add(topLeftLight);
 glowLights.push(topLeftLight);
 
 
-/* ---------- CONVEYORS ---------- */
+
 
 const rollers = [];
 
@@ -558,7 +558,7 @@ function controlPanel(g, x, y, z) {
   g.add(box(0.08, 0.08, 0.04, mat.yellow, x, y - 0.13, z + 0.05));
 }
 
-/* ---------- SOFT FIGURES ---------- */
+
 
 function aperturePerson(x, z, scale = 1) {
   const g = new THREE.Group();
@@ -632,14 +632,14 @@ function aperturePerson(x, z, scale = 1) {
   return g;
 }
 
-/* ---------- MAIN LAYOUT ---------- */
+
 
 conveyor(-5.8, 0.52, 0, 8.5, 0);
 conveyor(2.7, 0.52, 0, 8.5, 0);
 conveyor(7.3, 0.82, -2.4, 4.8, -0.5);
 conveyor(-7.5, 0.45, -3.5, 4.2, 0.25);
 
-// visible 90-degree transfer belt into the right-side machine
+
 const transferBelt = new THREE.Group();
 transferBelt.position.set(6.95, 0.55, -0.82);
 scene.add(transferBelt);
@@ -665,7 +665,7 @@ for (let i = 0; i < 7; i++) {
   rollers.push(r);
 }
 
-/* ---------- MACHINES ---------- */
+
 
 function feedChamber() {
   const g = new THREE.Group();
@@ -761,25 +761,25 @@ function cutterOutput() {
   g.position.set(7.55, 0, -1.38);
   scene.add(g);
 
-  // main body
+
   g.add(box(3.75, 2.25, 1.65, mat.white, 0, 1.35, 0));
   g.add(box(4.0, 0.2, 1.82, mat.white2, 0, 2.6, 0));
 
-  // true hollow opening, bigger and centered over transfer belt
+
   g.add(box(2.45, 1.05, 0.1, mat.dark, -0.15, 1.28, 0.88));
 
-  // inside tunnel pieces so it feels hollow
+
   g.add(box(2.25, 0.08, 1.15, mat.belt, -0.15, 0.88, 0.35));
   g.add(box(0.12, 1.0, 1.05, mat.darkGray, -1.35, 1.3, 0.38));
   g.add(box(0.12, 1.0, 1.05, mat.darkGray, 1.05, 1.3, 0.38));
   g.add(box(2.45, 0.1, 1.05, mat.darkGray, -0.15, 1.82, 0.38));
 
-  // yellow trim around opening
+
   g.add(box(2.55, 0.08, 0.08, mat.yellow, -0.15, 1.86, 0.94));
   g.add(box(0.08, 1.05, 0.08, mat.yellow, -1.43, 1.35, 0.94));
   g.add(box(0.08, 1.05, 0.08, mat.yellow, 1.13, 1.35, 0.94));
 
-  // animated cutter arm
+
   const arm = new THREE.Group();
 
   arm.add(box(0.16, 1.15, 0.16, mat.gray, 0, 0.45, 0));
@@ -805,7 +805,7 @@ const machineB = compressionPress();
 const machineC = scannerTable();
 const machineD = cutterOutput();
 
-/* ---------- BACKGROUND MACHINES ---------- */
+
 
 for (let i = 0; i < 5; i++) {
   const x = -10 + i * 5;
@@ -821,7 +821,7 @@ for (let i = 0; i < 5; i++) {
 }
 
 
-/* ---------- PROPS ---------- */
+
 
 for (let i = 0; i < 8; i++) {
   const barrel = new THREE.Group();
@@ -844,7 +844,7 @@ for (let i = 0; i < 8; i++) {
   barrel.add(box(0.18, 0.035, 0.04, mat.dark, 0, 0.56, 0));
 }
 
-/* ---------- HOPPER / PICKER ARM ---------- */
+
 
 const hopper = new THREE.Group();
 
@@ -908,7 +908,7 @@ picker.userData.lowerArm = lowerArm;
 picker.userData.upperGroup = upperGroup;
 picker.userData.claw = claw;
 
-/* ---------- FORKLIFT / PALLET ---------- */
+
 
 const draggableBoxes = [];
 const raycaster = new THREE.Raycaster();
@@ -1008,7 +1008,7 @@ crate.rotation.y = -0.18;
   draggableBoxes.push(crate);
 }
 
-/* ---------- PACKAGES ---------- */
+
 
 const packages = [];
 
@@ -1037,7 +1037,7 @@ for (let i = 0; i < 7; i++) {
   createPackage(-9.6 + i * 2.6, i * 0.4);
 }
 
-/* ---------- BACKGROUND INDICATORS ---------- */
+
 
 const movingIndicators = [];
 
@@ -1059,7 +1059,7 @@ for (let i = 0; i < 24; i++) {
   movingIndicators.push(line);
 }
 
-/* ---------- PACKAGE LOGIC ---------- */
+
 
 function resetPackage(p) {
   p.position.x = -9.8;
@@ -1089,27 +1089,29 @@ function animatePackageStages(p) {
   if (p.position.x > -4.0 && p.userData.stage === 1) {
     p.userData.stage = 2;
     p.scale.set(1.22, 0.74, 1.15);
+
     if (p.children[0]) p.children[0].material = mat.yellow2;
     if (p.children[1]) p.children[1].material = mat.yellow;
   }
 
   if (p.position.x > 1.1 && p.userData.stage === 2) {
     p.userData.stage = 3;
+
     if (p.children[0]) p.children[0].material = mat.white2;
     if (p.children[1]) p.children[1].material = mat.yellow;
   }
 
-if (p.position.x > 5.35 && p.userData.stage === 3) {
-  p.userData.stage = 4;
+  if (p.position.x > 5.35 && p.userData.stage === 3) {
+    p.userData.stage = 4;
 
-  if (p.children[0]) p.children[0].material = mat.yellow;
-  if (p.children[1]) p.children[1].material = mat.yellow2;
+    if (p.children[0]) p.children[0].material = mat.yellow;
+    if (p.children[1]) p.children[1].material = mat.yellow2;
 
-  p.scale.set(1, 1, 1);
+    p.scale.set(1, 1, 1);
+  }
 }
-}
 
-/* ---------- DRAGGING ---------- */
+
 
 function getMouse(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -1182,7 +1184,7 @@ selectedBox.position.y = 0.25;
   document.body.style.cursor = "default";
 });
 
-/* ---------- ANIMATION ---------- */
+
 
 let time = 0;
 
@@ -1199,17 +1201,16 @@ function animate() {
     r.rotation.z += 0.08 + i * 0.01;
   });
 
-  // press: slow slide, sharp stamp
+
   machineB.gantry.position.x = Math.sin(time * 0.9) * 0.28;
 
   const pressPulse = Math.abs(Math.sin(time * 2.2));
   machineB.plate.position.y = 1.7 - pressPulse * 0.28;
 
-  // scanner: sweeping bar
+
   machineC.scanner.position.x = Math.sin(time * 1.7) * 0.95;
   machineC.scanner.position.y = 1.78;
 
-  // cutter/output arm
   machineD.arm.rotation.z = -0.25 + Math.sin(time * 1.4) * 0.28;
   machineD.flap.rotation.z = -0.08 + Math.sin(time * 1.1) * 0.08;
 
